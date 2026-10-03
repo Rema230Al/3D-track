@@ -23,20 +23,20 @@ export default function OptionCard({
         {index !== undefined ? (
           <span
             dir="ltr"
-            className="w-6 shrink-0 font-mono text-xs font-medium text-tq-violet/70 transition-colors group-aria-checked:text-tq-cyan"
+            className="w-6 shrink-0 font-mono text-xs font-medium text-tq-violet/70 transition-colors group-aria-checked:text-tq-apricot"
           >
             {pad(index + 1)}
           </span>
         ) : (
           <span aria-hidden="true" className="grid w-3 shrink-0 place-items-center sm:w-4">
-            <span className="size-2 rounded-[2px] bg-tq-violet/70 transition-colors group-aria-checked:bg-tq-cyan" />
+            <span className="size-2 rounded-[2px] bg-tq-violet/70 transition-colors group-aria-checked:bg-tq-apricot" />
           </span>
         )}
         <span className="flex-1 text-[15.5px] font-medium leading-relaxed sm:text-[17px]">
           <Mixed text={label} />
         </span>
         <span
-          className="grid size-6 shrink-0 place-items-center rounded-[5px] border-2 border-tq-line bg-tq-bg transition-colors group-aria-checked:border-tq-cyan group-aria-checked:bg-tq-cyan"
+          className="grid size-6 shrink-0 place-items-center rounded-[5px] border-2 border-tq-line bg-tq-bg transition-colors group-aria-checked:border-tq-apricot group-aria-checked:bg-tq-apricot"
           aria-hidden="true"
         >
           {selected && (

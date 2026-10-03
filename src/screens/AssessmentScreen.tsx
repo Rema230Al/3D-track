@@ -8,15 +8,17 @@ import MultiSelect from "../components/MultiSelect";
 import TerminalInput from "../components/TerminalInput";
 import ColorClaim from "../components/ColorClaim";
 import Progress, { PixelPeak } from "../components/Progress";
+import RenderText from "../components/RenderText";
+import { CameraIcon, CubeIcon, LightIcon, MeshIcon, SphereIcon, VerticesIcon } from "../components/Icons3D";
 import { GhostButton, Mixed, PopButton, pad, shortHash } from "../components/ui";
 
 export type SubmitState = "idle" | "sending" | "error";
 
-const TYPE_TAG: Record<Question["kind"], string> = {
-  single: "select(1)",
-  multi: "select(n)",
-  text: "stdin",
-  color: "claim()",
+const TYPE_TAG: Record<Question["kind"], { label: string; Icon: typeof CubeIcon }> = {
+  single: { label: "select · 1", Icon: CubeIcon },
+  multi: { label: "select · n", Icon: VerticesIcon },
+  text: { label: "input", Icon: CameraIcon },
+  color: { label: "material", Icon: LightIcon },
 };
 
 const slide = {
@@ -34,7 +36,7 @@ function summary(value: AnswerValue, note?: string) {
   return s.length > 34 ? `${s.slice(0, 34)}…` : s;
 }
 
-/** Desktop side panel: the answers so far as a `git log`, under a big pixel peak. */
+/** Desktop side panel: the answers so far as a scene outliner, under a big pixel peak. */
 function SidePanel({
   fullName,
   answers,
@@ -52,11 +54,11 @@ function SidePanel({
     <aside className="sticky top-32 hidden self-start lg:block" aria-hidden="true">
       <PixelPeak level={done.filter(Boolean).length} className="w-full max-w-[300px]" />
       <div dir="ltr" className="mt-8 border-l-2 border-tq-line pl-4 text-left font-mono text-[12px] leading-7">
-        <p className="text-tq-muted">
-          <span className="text-tq-violet">❯</span> git log --oneline
+        <p className="flex items-center gap-2 text-tq-muted">
+          <MeshIcon size={13} className="text-tq-violet" /> scene outliner
         </p>
         <p className="truncate text-tq-muted">
-          author: <bdi className="text-tq-paper">{fullName}</bdi>
+          artist: <bdi className="text-tq-paper">{fullName}</bdi>
           {answers.favoriteColor && (
             <span className="ms-2 inline-block size-2.5 rounded-[2px] align-middle" style={{ background: answers.favoriteColor.hex }} />
           )}
@@ -65,6 +67,11 @@ function SidePanel({
           const s = summary(answers[q.id], others[q.id]);
           return (
             <p key={q.id} className={`truncate ${i === step ? "text-tq-paper" : done[i] ? "text-tq-muted" : "text-tq-muted/35"}`}>
+              {done[i] ? (
+                <CubeIcon size={11} className="me-1.5 inline-block align-[-1px] text-tq-apricot" />
+              ) : (
+                <SphereIcon size={11} className="me-1.5 inline-block align-[-1px] opacity-40" />
+              )}
               <span className={done[i] ? "text-tq-violet" : ""}>{done[i] ? shortHash(q.id + s) : "·······"}</span> {q.code}
               {done[i] && <span className="text-tq-muted/70"> — <bdi>{s}</bdi></span>}
             </p>
@@ -102,6 +109,7 @@ export default function AssessmentScreen({
   onSubmit: () => void;
 }) {
   const q: Question = questions[step];
+  const tag = TYPE_TAG[q.kind];
   const done = questions.map((qq) => isAnswered(qq, answers, others));
   const valid = canContinue(q, answers, others);
   const isLast = step === questions.length - 1;
@@ -186,18 +194,22 @@ export default function AssessmentScreen({
               exit="exit"
               transition={{ duration: 0.24, ease: [0.2, 0.8, 0.2, 1] }}
             >
-              <p className="font-mono text-xs text-tq-violet">
+              <p className="flex items-center gap-2 font-mono text-xs text-tq-violet">
+                <MeshIcon size={14} className="shrink-0 text-tq-apricot" />
                 <bdi dir="ltr">
-                  // {pad(step + 1)} — {q.code}
+                  {pad(step + 1)} — {q.code}
                 </bdi>
               </p>
               {q.lead && <p className="mt-3 text-[17px] text-tq-muted sm:text-xl">{q.lead}</p>}
               <h1 className="mt-3 text-balance text-[1.6rem] font-bold leading-[1.5] sm:text-[2.15rem] lg:text-[2.5rem] lg:leading-[1.4]">
-                <Mixed text={q.title} latinClass="text-tq-violet" />
+                <RenderText>
+                  <Mixed text={q.title} latinClass="text-tq-apricot" />
+                </RenderText>
               </h1>
               <p className="mt-3 flex items-center gap-2.5 text-[14px] text-tq-muted">
-                <span dir="ltr" className="rounded-md border-2 border-tq-line px-1.5 py-0.5 font-mono text-[10.5px] font-bold uppercase tracking-wider">
-                  {TYPE_TAG[q.kind]}
+                <span dir="ltr" className="inline-flex items-center gap-1.5 rounded-md border-2 border-tq-line px-1.5 py-0.5 font-mono text-[10.5px] font-bold uppercase tracking-wider">
+                  <tag.Icon size={12} className="text-tq-apricot" />
+                  {tag.label}
                 </span>
                 {q.hint}
               </p>
@@ -300,10 +312,10 @@ export default function AssessmentScreen({
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="mb-4 rounded-xl border-2 border-tq-orange/50 bg-tq-orange/10 px-4 py-3"
+              className="mb-4 rounded-xl border-2 border-tq-warn/50 bg-tq-warn/10 px-4 py-3"
             >
-              <p dir="ltr" className="text-left font-mono text-xs text-tq-orange">
-                ✗ error: push rejected — network
+              <p dir="ltr" className="text-left font-mono text-xs text-tq-warn">
+                ✗ error: render failed — network
               </p>
               <p className="mt-1 text-[14px] leading-7">ما قدرنا نرسل إجاباتك. إجاباتك محفوظة، جرّب مرة ثانية.</p>
             </motion.div>
@@ -329,7 +341,7 @@ export default function AssessmentScreen({
               "إعادة المحاولة"
             ) : (
               <bdi dir="ltr" className="font-mono tracking-wide">
-                FINAL COMMIT
+                FINAL RENDER
               </bdi>
             )}
           </PopButton>

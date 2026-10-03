@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import TerminalDetail from "./TerminalDetail";
 import { isLatin, seeded } from "./ui";
+import { SphereIcon } from "./Icons3D";
 import type { FavoriteColor } from "../types/assessment";
 
 // Loose spots (% of the field) scattered around the member's name, clear of the centre.
@@ -12,20 +13,25 @@ const SPOTS: [number, number][] = [
 
 const canDrag = () => typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-/** One color as a pixel token; the same layoutId lets it fly between the field and the name. */
+/** One color as a shaded material ball; the same layoutId lets it fly between the field and the name. */
 function Pixel({ color, size }: { color: FavoriteColor; size: "field" | "slot" }) {
   return (
     <motion.span
       layoutId={`pixel-${color.name}`}
       transition={{ type: "spring", stiffness: 420, damping: 30 }}
-      className={`block rounded-[6px] border-2 border-white/25 ${size === "field" ? "size-11" : "size-full"}`}
-      style={{ background: color.hex, boxShadow: "inset -4px -4px 0 rgb(0 0 0 / 0.22)" }}
+      className={`block rounded-full border border-white/20 ${size === "field" ? "size-11" : "size-full"}`}
+      style={{
+        backgroundColor: color.hex,
+        backgroundImage:
+          "radial-gradient(circle at 34% 28%, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0) 34%), radial-gradient(circle at 50% 45%, transparent 45%, rgb(0 0 0 / 0.45) 100%)",
+        boxShadow: "0 6px 10px -4px rgb(0 0 0 / 0.6)",
+      }}
     />
   );
 }
 
 /**
- * Q9 — CLAIM YOUR COLOR. Colors float as loose pixels around the member's name.
+ * Q9 — CLAIM YOUR COLOR. Colors float as material balls around the member's name.
  * Tap (or on desktop, drag onto the name) to claim one; it flies into the slot beside the name.
  */
 export default function ColorClaim({
@@ -72,7 +78,8 @@ export default function ColorClaim({
     <div>
       <div dir="ltr" className="mb-3 flex items-center justify-between font-mono text-[11px] tracking-[0.2em]">
         <span className="font-bold text-tq-paper">
-          CLAIM YOUR COLOR<span className="text-tq-cyan">_</span>
+          <SphereIcon size={13} className="me-2 inline-block align-[-2px] text-tq-apricot" />
+          CLAIM YOUR COLOR
         </span>
         <span className="text-tq-muted/70">{drag ? "click or drag" : "tap to claim"}</span>
       </div>
@@ -118,7 +125,7 @@ export default function ColorClaim({
                 {value ? (
                   <Pixel key={value.name} color={value} size="slot" />
                 ) : (
-                  <span className="block size-full animate-[blink_1.05s_steps(1)_infinite] rounded-[6px] border-2 border-dashed border-tq-violet/70" />
+                  <span className="block size-full animate-[blink_1.05s_steps(1)_infinite] rounded-full border-2 border-dashed border-tq-apricot/70" />
                 )}
               </span>
             </span>
@@ -160,7 +167,7 @@ export default function ColorClaim({
               style={{ left: `${x}%`, top: `${y}%`, cursor: claimed ? "default" : drag ? "grab" : "pointer" }}
             >
               {claimed ? (
-                <span className="block size-11 rounded-[6px] border-2 border-dashed border-tq-line" />
+                <span className="block size-11 rounded-full border-2 border-dashed border-tq-line" />
               ) : (
                 <Pixel color={c} size="field" />
               )}
@@ -179,8 +186,8 @@ export default function ColorClaim({
             <motion.div key={value.hex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <TerminalDetail
                 lines={[
-                  { text: `identity.color = ${value.hex}`, tone: "cmd" },
-                  { text: "color claimed", tone: "ok" },
+                  { text: `material.base_color = ${value.hex}`, tone: "cmd" },
+                  { text: "material applied", tone: "ok" },
                 ]}
                 charMs={12}
                 pauseMs={60}

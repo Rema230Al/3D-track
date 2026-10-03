@@ -1,20 +1,21 @@
 /**
- * TUWAIQ INIT — receives one assessment submission and appends it to the spreadsheet.
+ * 3D Track — receives one assessment submission and appends it to the spreadsheet.
  * Deploy as a Web App (Execute as: Me · Who has access: Anyone).
  *
- * Tabs:
- *   "Responses v2" — current assessment (created automatically with its header row).
- *   "Responses"    — the first version's rows. This script never reads, writes or clears it.
+ * This script belongs to the 3D Track's OWN Google Sheet. Do not paste it into the
+ * Programming Track (TUWAIQ INIT) sheet: bound scripts write to the sheet they live in.
+ *
+ * Tab: "Responses" (created automatically with its header row).
  *
  * Rows are written by header name, so reordering columns or adding your own columns in the
  * sheet is safe. Headers are only ever added: a missing expected header is appended at the end
  * of row 1, and existing headers, columns and response rows are never cleared, moved or removed.
- * (Columns from the previous question set stay in place and are simply left blank for new rows.)
+ * (When the questions change, old columns stay in place and are simply left blank for new rows.)
  */
 
-const SHEET_NAME = "Responses v2";
+const SHEET_NAME = "Responses";
 /** Returned by doGet, so you can open the Web App URL and see which code is live. */
-const SCRIPT_VERSION = "v3-final-18q";
+const SCRIPT_VERSION = "3d-v1-18q";
 
 const list_ = (v) => (Array.isArray(v) ? v.join(", ") : v || "");
 const text_ = (v) => (typeof v === "string" ? v : "");
@@ -68,7 +69,7 @@ function doPost(e) {
 }
 
 /**
- * Run from the Apps Script editor to create "Responses v2" (or bring its headers up to date).
+ * Run from the Apps Script editor to create "Responses" (or bring its headers up to date).
  * Safe to run any time: it never deletes, clears or moves a response row.
  */
 function setupSheet() {
@@ -77,7 +78,7 @@ function setupSheet() {
 }
 
 function doGet() {
-  return json_({ ok: true, service: "tuwaiq-init", version: SCRIPT_VERSION, sheet: SHEET_NAME });
+  return json_({ ok: true, service: "tuwaiq-3d-track", version: SCRIPT_VERSION, sheet: SHEET_NAME });
 }
 
 function getSheet_(name) {

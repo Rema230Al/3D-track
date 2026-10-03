@@ -3,6 +3,7 @@ import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import IntroScreen from "./screens/IntroScreen";
 import AssessmentScreen, { type SubmitState } from "./screens/AssessmentScreen";
 import SuccessScreen from "./screens/SuccessScreen";
+import { AxesGizmo } from "./components/Icons3D";
 import { emptyAnswers, emptyMember } from "./data/questions";
 import {
   buildSubmission,
@@ -19,7 +20,7 @@ import type { AnswerKey, Answers, Member, OtherNotes, Stage, Submission } from "
 const initialDraft = loadDraft();
 
 export default function App() {
-  // 01 INIT → 02 ASSESSMENT → 03 COMPLETE
+  // 01 SCENE SETUP → 02 ASSESSMENT → 03 RENDER COMPLETE
   const [stage, setStage] = useState<Stage>("init");
   const [member, setMember] = useState<Member>(loadMember);
   const [step, setStep] = useState(initialDraft?.step ?? 0);
@@ -66,7 +67,7 @@ export default function App() {
       setSubmitState("idle");
       setStage("complete");
     } catch (err) {
-      console.error("[tuwaiq-init] submission failed:", err);
+      console.error("[3d-track] submission failed:", err);
       setSubmitState("error");
     }
   };
@@ -74,6 +75,7 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <div className="backdrop" aria-hidden="true" />
+      <AxesGizmo className="gizmo hidden sm:block" />
       <AnimatePresence mode="wait">
         <motion.div
           key={stage}

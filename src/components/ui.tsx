@@ -1,14 +1,15 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { CubeIcon } from "./Icons3D";
 
 /**
- * Official logo slot. Drop the Tuwaiq × UJ Programming logo into /public/brand/
+ * Official logo slot. Drop the Tuwaiq × UJ 3D Track logo into /public/brand/
  * and set its file name here (e.g. "brand/logo.svg"); until then the text wordmark is used.
  */
 export const LOGO_SRC: string | null = null;
 
 export const pad = (n: number) => String(n).padStart(2, "0");
 
-/** Short, stable, git-looking hash for any string. */
+/** Short, stable, hex object id for any string. */
 export function shortHash(str: string) {
   let h = 5381;
   for (const ch of str) h = ((h << 5) + h + ch.charCodeAt(0)) >>> 0;
@@ -18,10 +19,10 @@ export function shortHash(str: string) {
 const STOPS = [
   [0x4f, 0x29, 0xb7],
   [0xa3, 0x80, 0xff],
-  [0x57, 0xe3, 0xd8],
+  [0xff, 0xc4, 0x9b],
 ];
 
-/** Tuwaiq gradient (purple → violet → turquoise) sampled at t ∈ [0, 1]. */
+/** 3D Track gradient (purple → violet → apricot) sampled at t ∈ [0, 1]. */
 export function brandColor(t: number) {
   const x = Math.min(1, Math.max(0, t)) * (STOPS.length - 1);
   const i = Math.min(STOPS.length - 2, Math.floor(x));
@@ -36,14 +37,15 @@ export function seeded(i: number, k = 0) {
   return x - Math.floor(x);
 }
 
-const LATIN_RUN = /([A-Za-z][A-Za-z0-9+#./&\- ]*[A-Za-z0-9+#])/g;
+// May start with digits ("3D Track") but must contain a letter, so plain numbers stay in the Arabic flow.
+const LATIN_RUN = /(\d*[A-Za-z][A-Za-z0-9+#./&\- ]*[A-Za-z0-9+#])/g;
 const HAS_ARABIC = /[؀-ۿ]/;
 
 export const isLatin = (text: string) => !HAS_ARABIC.test(text);
 
 /**
  * Arabic text with embedded English terms. Each Latin run is isolated as LTR so
- * "Programming Track", "AI Agents", "Fine-Tuning"… keep their order inside RTL.
+ * "3D Track", "AI Agents", "Fine-Tuning"… keep their order inside RTL.
  */
 export function Mixed({ text, latinClass = "" }: { text: string; latinClass?: string }) {
   if (isLatin(text)) return <bdi dir="ltr">{text}</bdi>;
@@ -68,11 +70,11 @@ export function Brand({ className = "" }: { className?: string }) {
       {LOGO_SRC && <img src={LOGO_SRC} alt="Tuwaiq Club" className="h-9 w-auto" />}
       <div className="leading-none">
         <p className="font-mono text-[11px] font-bold tracking-[0.34em] text-tq-paper">
-          TUWAIQ <span className="text-tq-cyan">×</span> UJ
+          TUWAIQ <span className="text-tq-apricot">×</span> UJ
         </p>
         <p className="mt-1.5 flex items-center gap-2 font-mono text-[9px] font-medium tracking-[0.36em] text-tq-violet">
-          <span className="h-px w-3 bg-current" />
-          PROGRAMMING TRACK
+          <CubeIcon size={11} className="text-tq-apricot" />
+          3D TRACK
         </p>
       </div>
     </div>
@@ -119,7 +121,7 @@ export function GhostButton({ children, className = "", ...rest }: ButtonHTMLAtt
   return (
     <button
       type="button"
-      className={`ghost inline-flex h-14 items-center justify-center gap-2 rounded-xl px-4 text-[15px] font-medium text-tq-muted transition-colors hover:text-tq-paper disabled:opacity-40 ${className}`}
+      className={`ghost inline-flex h-14 items-center justify-center gap-2 rounded-xl px-4 text-[15px] font-medium text-tq-muted transition-colors hover:text-tq-apricot disabled:opacity-40 ${className}`}
       {...rest}
     >
       <Roll>{children}</Roll>

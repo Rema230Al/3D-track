@@ -1,5 +1,5 @@
 {
-  "name": "tuwaiq-init",
+  "name": "tuwaiq-3d-track",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && npx wrangler pages deploy dist --project-name tuwaiq-init --branch main"
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name tuwaiq-3d-track --branch main"
   },
   "dependencies": {
     "framer-motion": "^13.4.4",

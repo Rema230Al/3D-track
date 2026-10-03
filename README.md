@@ -1,6 +1,6 @@
-# TUWAIQ INIT
+# 3D Track
 
-A short member assessment for the **Programming Track** of Tuwaiq Club at the University of Jeddah: the member's info (full name, major, academic year), then the questions in `src/data/questions.ts` (including "claim your color" and an optional note to the leaders), about 5 minutes, Arabic-first (RTL), and designed for phones first.
+A short member assessment for the **3D Track** of Tuwaiq Club at the University of Jeddah: the member's info (full name, major, academic year), then the questions in `src/data/questions.ts` (including "claim your color" and an optional note to the leaders), about 5 minutes, Arabic-first (RTL), and designed for phones first.
 
 The assessment has 18 questions in five sections (current experience, interests, expectations & roles, logistics, closing). Member info is collected first and is not counted. The progress UI derives its total from `questions.length`.
 
@@ -13,7 +13,10 @@ npm install
 cp .env.example .env   # optional
 npm run dev
 npm run build          # outputs to dist/
+npm run deploy         # builds, then deploys to the Cloudflare Pages project "tuwaiq-3d-track"
 ```
+
+**Deploy target:** the Cloudflare Pages project is **`tuwaiq-3d-track`** (in `package.json` and `wrangler.toml`). It is deliberately different from `tuwaiq-init`, the live Programming Track site, so deploying this repo can never overwrite it.
 
 If `VITE_SUBMISSION_WEBHOOK_URL` is empty, submissions are only logged to the browser console, so you can still test the whole flow.
 
@@ -23,7 +26,7 @@ If `VITE_SUBMISSION_WEBHOOK_URL` is empty, submissions are only logged to the br
 src/
   App.tsx                 stage machine: init → assessment → complete
   screens/                IntroScreen · AssessmentScreen · SuccessScreen
-  components/             OptionCard · MultiSelect · TerminalInput · ColorClaim · Progress · TerminalDetail · ui
+  components/             OptionCard · MultiSelect · TerminalInput · ColorClaim · Progress · TerminalDetail · RenderText · Icons3D · ui
   data/questions.ts       all question text and options (edit questions here)
   services/submissionService.ts   POST to Apps Script + local draft
   types/assessment.ts
@@ -32,26 +35,29 @@ google-apps-script/Code.gs
 
 The member info and answers are saved to `localStorage` while the student is answering. A refresh or a failed submit therefore never loses anything: the intro offers to resume, and a failed submit shows a Retry button. The draft is versioned: a draft saved by an older version of the questions keeps only the answers that still match, and the rest start empty.
 
-**Logo:** put the official Tuwaiq × UJ Programming logo in `public/brand/` and set `LOGO_SRC` in `src/components/ui.tsx`.
+**Logo:** put the official Tuwaiq × UJ 3D Track logo in `public/brand/` and set `LOGO_SRC` in `src/components/ui.tsx`.
 
 ## Google Sheets setup
 
-1. Create a Google Sheet (keep it private).
-2. Submissions go to a tab named **`Responses v2`**, created automatically with its header row on the first submission. To create it (or update its headers) right away, run **`setupSheet`** once from the Apps Script editor. Its columns:
+Answers go to the 3D Track's **own** Google Sheet. Never reuse the Programming Track's sheet, script or Web App URL.
+
+1. Create a new Google Sheet (keep it private), e.g. **3D Track — Responses**.
+2. In that sheet, open **Extensions → Apps Script**. This creates a script bound to this sheet only.
+3. Replace the editor contents with `google-apps-script/Code.gs` and save.
+4. Optional: run **`setupSheet`** once (pick it in the function menu, then **Run**, and authorize). It creates the **`Responses`** tab with its header row. Otherwise the tab is created on the first submission. Its columns:
 
    `Full Name · Major · Academic Year · Submitted At · Programming Experience · Build Ability · Git/GitHub Usage · AI Usage · Teamwork Experience · Technologies Used · Interests · Preferred Activities · Learning Preference · Learning Preference Details · Track Avoidances · Helping Preference · Preferred Team Role · Preferred Times · Activity Format · Potential Blocker · Success Definition · Favorite Color · Favorite Color Hex · Leadership Note`
 
-   Multi-select answers are stored comma-separated. Values are written by header name, so you can reorder columns or add your own. Headers are only ever added (missing ones go at the end of row 1): columns from the previous question set and every submitted row stay untouched. The first version's tab, **`Responses`**, is never read, written or cleared.
-3. Open **Extensions → Apps Script**.
-4. Paste the contents of `google-apps-script/Code.gs` and save.
-5. Click **Deploy → New deployment → Web app**. Set *Execute as*: **Me** and *Who has access*: **Anyone**, then deploy and authorize.
+   Multi-select answers are stored comma-separated. Values are written by header name, so you can reorder columns or add your own. Headers are only ever added (missing ones go at the end of row 1), and submitted rows are never touched.
+5. Click **Deploy → New deployment → ⚙ → Web app**. Set *Execute as*: **Me** and *Who has access*: **Anyone**, then deploy and authorize.
 6. Copy the Web app URL, which ends in **`/exec`**.
-7. Put it in `.env` (or in your hosting provider's environment variables):
+7. Check it: open the URL in a browser. It must show `"service":"tuwaiq-3d-track"`. If it shows `tuwaiq-init`, it is the Programming Track's script, so don't use it.
+8. Put it in `.env` at the project root (copy `.env.example` first):
 
    ```
    VITE_SUBMISSION_WEBHOOK_URL=https://script.google.com/macros/s/XXXX/exec
    ```
 
-   Then rebuild.
+   Then rebuild (`npm run build`, or restart `npm run dev`).
 
 The sheet itself stays private. The web app can only append rows; it cannot read them. If you edit `Code.gs` later, go to **Deploy → Manage deployments → Edit → New version**; the URL stays the same.

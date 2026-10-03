@@ -1,10 +1,12 @@
+import { useId } from "react";
 import { motion } from "framer-motion";
 import { questions } from "../data/questions";
 import { Brand, brandColor, pad, seeded } from "./ui";
 
 // ---------- Pixel Peak ----------
-// The progress mountain: one pixel row per question. Each answer builds a
-// row from the base up; the summit flag goes up when the assessment is committed.
+// The progress mountain: one pixel row per question. Rows not built yet are a faint
+// wireframe; each answer builds the next row solid from the base up, and the newest
+// row glows apricot as it lifts into place. The summit flag goes up on the final render.
 
 export const PEAK_ROWS = questions.length;
 const ROWS = PEAK_ROWS;
@@ -27,6 +29,8 @@ for (let r = 0; r < ROWS; r++) {
   }
 }
 
+const APRICOT = "#ffc49b";
+
 export function PixelPeak({
   level,
   flag = false,
@@ -35,32 +39,54 @@ export function PixelPeak({
 }: {
   level: number;
   flag?: boolean;
-  /** Paints the summit pixel (the final commit) in the member's claimed color. */
+  /** Paints the summit pixel (the final render) in the member's claimed color. */
   capColor?: string;
   className?: string;
 }) {
+  const glow = `peak-glow-${useId().replace(/:/g, "")}`;
+  const newest = level - 1;
+
+  const cell = ({ r, c, loose }: Cell) => {
+    const lit = r < level;
+    const next = r === level;
+    const top = r === newest;
+    const cap = capColor && lit && r === ROWS - 1;
+    return (
+      <rect
+        key={`${r}-${c}`}
+        x={c + 0.09}
+        y={ROWS - 1 - r + 0.09}
+        width={0.82}
+        height={0.82}
+        rx={0.06}
+        fill={cap ? capColor : top ? APRICOT : lit ? brandColor(r / (ROWS - 1)) : next ? "rgb(255 196 155 / 0.1)" : "rgb(163 128 255 / 0.05)"}
+        stroke={cap ? "#ededed" : lit ? undefined : next ? "rgb(255 196 155 / 0.55)" : "rgb(163 128 255 / 0.28)"}
+        strokeWidth={cap ? 0.08 : lit ? undefined : 0.07}
+        strokeDasharray={next ? "0.2 0.12" : undefined}
+        opacity={loose ? (lit ? 0.6 : 0.35) : 1}
+        style={{ transition: "fill .35s ease-out", transitionDelay: `${Math.abs(c - MID) * 22}ms` }}
+      />
+    );
+  };
+
   return (
-    <svg viewBox={`-0.6 -3.4 ${COLS + 1.2} ${ROWS + 3.6}`} className={className} aria-hidden="true" shapeRendering="crispEdges">
-      {CELLS.map(({ r, c, loose }) => {
-        const lit = r < level;
-        const next = r === level;
-        const cap = capColor && lit && r === ROWS - 1;
-        return (
-          <rect
-            key={`${r}-${c}`}
-            x={c + 0.09}
-            y={ROWS - 1 - r + 0.09}
-            width={0.82}
-            height={0.82}
-            rx={0.06}
-            fill={cap ? capColor : lit ? brandColor(c / (COLS - 1)) : next ? "#2e2653" : "#211b37"}
-            stroke={cap ? "#ededed" : undefined}
-            strokeWidth={cap ? 0.08 : undefined}
-            opacity={loose ? (lit ? 0.6 : 0.35) : 1}
-            style={{ transition: "fill .35s ease-out", transitionDelay: `${Math.abs(c - MID) * 22}ms` }}
-          />
-        );
-      })}
+    <svg viewBox={`-0.6 -3.4 ${COLS + 1.2} ${ROWS + 3.6}`} className={className} aria-hidden="true">
+      <defs>
+        <filter id={glow} x="-20%" y="-300%" width="140%" height="700%">
+          <feGaussianBlur stdDeviation="0.45" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {CELLS.filter((k) => k.r !== newest).map(cell)}
+      {newest >= 0 && (
+        <g key={newest} className="peak-new" filter={`url(#${glow})`} style={{ transformBox: "fill-box" }}>
+          {CELLS.filter((k) => k.r === newest).map(cell)}
+        </g>
+      )}
       <motion.g
         initial={false}
         animate={flag ? { scaleY: 1, opacity: 1 } : { scaleY: 0, opacity: 0 }}
@@ -68,14 +94,14 @@ export function PixelPeak({
         style={{ transformOrigin: `${MID + 0.5}px 0px`, transformBox: "view-box" }}
       >
         <rect x={MID + 0.45} y={-3.1} width={0.12} height={3.1} fill="#ededed" />
-        <path d={`M${MID + 0.57} -3.1 L${MID + 2.5} -2.5 L${MID + 0.57} -1.9 Z`} fill="#F4A664" />
+        <path d={`M${MID + 0.57} -3.1 L${MID + 2.5} -2.5 L${MID + 0.57} -1.9 Z`} fill={APRICOT} />
       </motion.g>
     </svg>
   );
 }
 
-// ---------- Commit rail ----------
-// One pixel block per question: built ones take the brand gradient,
+// ---------- Build rail ----------
+// One pixel block per question: built ones take the track gradient,
 // the current one pings, answered ones can be jumped back to.
 
 function Rail({
@@ -104,7 +130,7 @@ function Rail({
             >
               <span
                 className={`absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 rounded-[2px] transition-colors duration-300 ${
-                  current ? "ping bg-tq-cyan" : d ? "" : "bg-tq-line"
+                  current ? "ping bg-tq-apricot" : d ? "" : "bg-tq-line"
                 }`}
                 style={!current && d ? { background: brandColor(i / (done.length - 1)) } : undefined}
               />
@@ -131,7 +157,7 @@ export default function Progress({
       <div className="flex items-center justify-between gap-4">
         <Brand />
         <div className="flex items-center gap-3" dir="ltr">
-          <PixelPeak level={built} className="w-12 sm:w-14" />
+          <PixelPeak level={built} className="w-16 sm:w-20" />
           <p className="font-mono leading-none tabular-nums" aria-label={`السؤال ${step + 1} من ${done.length}`}>
             <motion.span
               key={step}

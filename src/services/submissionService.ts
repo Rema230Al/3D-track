@@ -2,10 +2,10 @@ import { ACADEMIC_YEARS, OTHER, emptyMember, isAnswered, questions, sanitizeAnsw
 import type { Answers, Member, OtherNotes, Submission } from "../types/assessment";
 
 const WEBHOOK_URL = import.meta.env.VITE_SUBMISSION_WEBHOOK_URL?.trim() ?? "";
-const DRAFT_KEY = "tuwaiq-init:draft";
-const MEMBER_KEY = "tuwaiq-init:member";
+const DRAFT_KEY = "tuwaiq-3d-track:draft";
+const MEMBER_KEY = "tuwaiq-3d-track:member";
 /** v1 stored only the member's name, as a plain string. */
-const LEGACY_NAME_KEY = "tuwaiq-init:name";
+const LEGACY_NAME_KEY = "tuwaiq-3d-track:name";
 /** Bump whenever the questions change shape, so old drafts are migrated instead of trusted. */
 const DRAFT_VERSION = 5;
 const TIMEOUT_MS = 15000;
@@ -65,7 +65,7 @@ export function buildSubmission(member: Member, answers: Answers, others: OtherN
  */
 export async function submitAssessment(submission: Submission): Promise<SubmitMode> {
   if (!WEBHOOK_URL) {
-    console.info("[tuwaiq-init] VITE_SUBMISSION_WEBHOOK_URL is not set — submission logged locally:", submission);
+    console.info("[3d-track] VITE_SUBMISSION_WEBHOOK_URL is not set — submission logged locally:", submission);
     await new Promise((r) => setTimeout(r, 700));
     return "local";
   }

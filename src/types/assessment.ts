@@ -1,4 +1,4 @@
-// The three stages of the experience: 01 INIT → 02 ASSESSMENT → 03 COMPLETE.
+// The three stages of the experience: 01 SCENE SETUP → 02 ASSESSMENT → 03 RENDER COMPLETE.
 export type Stage = "init" | "assessment" | "complete";
 
 /** Member information, collected on the intro screen (not an assessment question). */

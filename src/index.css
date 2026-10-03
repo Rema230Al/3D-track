@@ -1,12 +1,21 @@
 @import "tailwindcss";
 
-/* Tuwaiq × UJ Programming palette. Purple + turquoise carry the identity,
-   orange is a rare accent, dark dominates. */
+/* Tuwaiq × UJ 3D Track palette. The dark purple base stays; soft apricot is the
+   track's accent (primary actions, selection, progress, focus, highlights). */
 @theme {
   --color-tq-purple: #4f29b7;
   --color-tq-violet: #a380ff;
   --color-tq-cyan: #57e3d8;
-  --color-tq-orange: #f4a664;
+  --color-tq-apricot: #ffc49b;
+  --color-tq-apricot-hi: #ffdcc2;
+  --color-tq-apricot-deep: #c98a5f;
+  /* Errors and limits: a soft coral, kept apart from the apricot accent. */
+  --color-tq-warn: #ff9a9a;
+
+  /* Viewport axis colors (X / Y / Z), softened for the dark purple base. */
+  --color-ax-x: #ff7b8a;
+  --color-ax-y: #a5e07a;
+  --color-ax-z: #7aaeff;
   --color-tq-ink: #262626;
   --color-tq-paper: #ededed;
 
@@ -14,7 +23,7 @@
   --color-tq-surface: #161225;
   --color-tq-raised: #1e1833;
   --color-tq-line: #342c4e;
-  --color-tq-muted: #9a93b3;
+  --color-tq-muted: #aaa3c4;
 
   --font-sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
@@ -29,7 +38,8 @@
   body {
     margin: 0;
     min-height: 100dvh;
-    background: var(--color-tq-bg);
+    /* No own background: html's paints the canvas, so the z-index:-1 backdrop (viewport
+       grid, gizmo) shows through instead of being covered by body. */
     color: var(--color-tq-paper);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -43,7 +53,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-tq-cyan);
+    outline: 2px solid var(--color-tq-apricot);
     outline-offset: 3px;
   }
 
@@ -52,15 +62,12 @@
   }
 }
 
-/* ---------- Backdrop: IDE grid paper with a violet glow at the top ---------- */
+/* ---------- Backdrop: a light 3D viewport grid (minor + major lines) on the plain base ---------- */
 .backdrop {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(60rem 28rem at 50% -8rem, rgb(79 41 183 / 0.38), transparent 70%),
-    radial-gradient(30rem 20rem at 0% 110%, rgb(87 227 216 / 0.08), transparent 70%);
 }
 
 .backdrop::before {
@@ -68,10 +75,27 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgb(163 128 255 / 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(163 128 255 / 0.07) 1px, transparent 1px);
-  background-size: 28px 28px;
+    linear-gradient(rgb(163 128 255 / 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(163 128 255 / 0.11) 1px, transparent 1px),
+    linear-gradient(rgb(163 128 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(163 128 255 / 0.05) 1px, transparent 1px);
+  background-size:
+    140px 140px,
+    140px 140px,
+    28px 28px,
+    28px 28px;
   mask-image: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / 0.35) 70%, transparent 100%);
+}
+
+/* Corner navigation gizmo: decoration only, never over content on small screens. */
+.gizmo {
+  position: fixed;
+  bottom: 18px;
+  left: 18px;
+  z-index: -1;
+  width: 64px;
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 /* ---------- Pop-out: a foreground plate lifted off a dotted pixel shadow ----------
@@ -120,7 +144,7 @@
 @media (hover: hover) {
   .pop:hover:not(:disabled) {
     --lift: 7px;
-    --pop-edge: var(--color-tq-violet);
+    --pop-edge: var(--color-tq-apricot);
   }
 }
 
@@ -132,15 +156,15 @@
 .pop[aria-pressed="true"] {
   --lift: 2px;
   --pop-bg: var(--color-tq-purple);
-  --pop-edge: var(--color-tq-cyan);
-  --pop-dot: var(--color-tq-cyan);
+  --pop-edge: var(--color-tq-apricot);
+  --pop-dot: var(--color-tq-apricot);
   --pop-fg: #fff;
 }
 
 .pop--primary {
-  --pop-bg: var(--color-tq-cyan);
-  --pop-edge: var(--color-tq-cyan);
-  --pop-dot: var(--color-tq-cyan);
+  --pop-bg: var(--color-tq-apricot);
+  --pop-edge: var(--color-tq-apricot);
+  --pop-dot: var(--color-tq-apricot);
   --pop-fg: var(--color-tq-bg);
 }
 
@@ -177,7 +201,7 @@
 
 @media (hover: hover) {
   .key:hover:not([aria-disabled="true"]) {
-    border-color: var(--color-tq-violet);
+    border-color: var(--color-tq-apricot);
   }
 }
 
@@ -188,10 +212,10 @@
 
 .key[aria-checked="true"] {
   transform: translateY(3px);
-  border-color: var(--color-tq-cyan);
-  background: var(--color-tq-cyan);
+  border-color: var(--color-tq-apricot);
+  background: var(--color-tq-apricot);
   color: var(--color-tq-bg);
-  box-shadow: 0 2px 0 0 #0a0812, 0 2px 0 2px #2a9e96;
+  box-shadow: 0 2px 0 0 #0a0812, 0 2px 0 2px var(--color-tq-apricot-deep);
 }
 
 .key[aria-disabled="true"] {
@@ -225,7 +249,7 @@
   }
 }
 
-/* ---------- Terminal bits ---------- */
+/* ---------- Render log bits ---------- */
 .cursor {
   display: inline-block;
   width: 0.55em;
@@ -246,7 +270,7 @@
   content: "";
   position: absolute;
   inset: -4px;
-  border: 2px solid var(--color-tq-cyan);
+  border: 2px solid var(--color-tq-apricot);
   border-radius: 3px;
   animation: ping 1.6s ease-out infinite;
 }
@@ -259,6 +283,57 @@
   100% {
     transform: scale(1.5);
     opacity: 0;
+  }
+}
+
+/* ---------- Render: text drawn first as a wireframe, then shaded in by a scan line ----------
+   Both layers share one grid cell so the solid copy sits exactly on the outline. */
+.render {
+  display: grid;
+}
+
+.render > * {
+  grid-area: 1 / 1;
+}
+
+.render__wire {
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(163 128 255 / 0.75);
+  background-image:
+    linear-gradient(rgb(163 128 255 / 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(163 128 255 / 0.12) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.render__wire * {
+  color: transparent !important;
+}
+
+.render__scan {
+  position: absolute;
+  top: -0.15em;
+  bottom: -0.15em;
+  width: 2px;
+  background: var(--color-tq-apricot);
+  box-shadow:
+    0 0 12px 2px rgb(255 196 155 / 0.7),
+    0 0 2px var(--color-tq-apricot-hi);
+  pointer-events: none;
+}
+
+/* ---------- Pixel peak: the newest built row lifts into place ---------- */
+.peak-new {
+  animation: peak-rise 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+@keyframes peak-rise {
+  0% {
+    transform: translateY(1.2px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 

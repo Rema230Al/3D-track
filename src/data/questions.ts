@@ -242,7 +242,7 @@ export const questions: Question[] = [
     code: "success.define()",
     kind: "text",
     multiline: true,
-    title: "بنهاية الترم، وش الشي اللي لو حققته بتقول \"دخولي Programming Track كان يستاهل\"؟",
+    title: "بنهاية الترم، وش الشي اللي لو حققته بتقول \"دخولي 3D Track كان يستاهل\"؟",
     hint: "جملة أو جملتين تكفي",
     placeholder: "اكتب إجابتك هنا...",
   },

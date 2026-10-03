@@ -45,12 +45,12 @@ export default function MultiSelect({
                 <span
                   key={i}
                   className={`size-3 rounded-[2px] transition-colors duration-200 ${
-                    i < value.length ? "bg-tq-cyan" : "border-2 border-tq-line"
+                    i < value.length ? "bg-tq-apricot" : "border-2 border-tq-line"
                   }`}
                 />
               ))}
             </span>
-            <span className={atMax ? "font-bold text-tq-cyan" : "text-tq-muted"}>
+            <span className={atMax ? "font-bold text-tq-apricot" : "text-tq-muted"}>
               {value.length} / {max}
             </span>
           </motion.div>
@@ -61,7 +61,7 @@ export default function MultiSelect({
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="text-[13px] text-tq-orange"
+                className="text-[13px] text-tq-warn"
               >
                 وصلت الحد، شيل واحد عشان تختار غيره
               </motion.p>

@@ -3,18 +3,18 @@ import { useReducedMotion } from "framer-motion";
 
 export interface TermLine {
   text: string;
-  /** cmd: typed command · out: output · ok: success line */
+  /** cmd: render step · out: log output · ok: success line */
   tone?: "cmd" | "out" | "ok";
 }
 
 const TONE = {
   cmd: "text-tq-paper",
   out: "text-tq-muted",
-  ok: "text-tq-cyan",
+  ok: "text-tq-apricot",
 };
 
 /**
- * A bare shell session (no window chrome): lines type themselves out quickly.
+ * A render log (no window chrome): lines print themselves out quickly.
  * `instant` skips straight to the end; reduced motion always does.
  */
 export default function TerminalDetail({
@@ -84,9 +84,9 @@ export default function TerminalDetail({
         const chars = Math.max(0, Math.min(line.text.length, shown - offsets[i]));
         return (
           <p key={i} className={`m-0 whitespace-pre-wrap ${TONE[line.tone ?? "out"]}`} aria-hidden="true" style={{ visibility: visible ? "visible" : "hidden" }}>
-            <span className={line.tone === "ok" ? "text-tq-cyan" : "text-tq-violet"}>{line.tone === "ok" ? "✓" : ">"}</span>{" "}
+            <span className={line.tone === "ok" ? "text-tq-apricot" : "text-tq-violet"}>{line.tone === "ok" ? "✓" : "▸"}</span>{" "}
             {line.text.slice(0, chars)}
-            {i === active && <span className="cursor text-tq-cyan" />}
+            {i === active && <span className="cursor text-tq-apricot" />}
           </p>
         );
       })}

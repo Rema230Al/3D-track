@@ -2,14 +2,15 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import TerminalDetail from "../components/TerminalDetail";
 import { PEAK_ROWS, PixelPeak } from "../components/Progress";
+import { AxesIcon, CameraIcon, CubeIcon, LightIcon, MeshIcon, SphereIcon } from "../components/Icons3D";
 import { Brand, GhostButton, Mixed, PopButton, brandColor, pad } from "../components/ui";
 import { ACADEMIC_YEARS, isMemberValid, isTextValid, questions } from "../data/questions";
 import type { Member } from "../types/assessment";
 
 const BOOT = [
-  { text: "tuwaiq.init()", tone: "cmd" as const },
-  { text: "loading track...", tone: "out" as const },
-  { text: "ready", tone: "ok" as const },
+  { text: "new scene: 3d-track", tone: "cmd" as const },
+  { text: "loading meshes...", tone: "out" as const },
+  { text: "viewport ready", tone: "ok" as const },
 ];
 
 /** Big Latin wordmark; letters rise out of a mask. */
@@ -33,13 +34,13 @@ function Wordmark() {
   return (
     <h1
       dir="ltr"
-      aria-label="TUWAIQ INIT"
+      aria-label="3D Track"
       className="text-right font-mono text-[clamp(3.6rem,18vw,8.25rem)] font-extrabold leading-[0.92] tracking-[-0.07em] lg:text-left"
     >
-      {word("TUWAIQ", () => "#ededed", 0)}
+      {word("3D", () => "#ededed", 0)}
       <span className="flex items-end justify-end lg:justify-start">
-        {word("INIT", (i) => brandColor(0.25 + i * 0.25), 0.2)}
-        <span className="cursor mb-[0.12em] w-[0.42em]! h-[0.14em]! text-tq-cyan" />
+        {word("TRACK", (i) => brandColor(0.5 + i * 0.125), 0.2)}
+        <CubeIcon size="0.42em" strokeWidth={2.4} className="mb-[0.1em] ms-[0.08em] shrink-0 text-tq-apricot" />
       </span>
     </h1>
   );
@@ -91,9 +92,9 @@ function ModeToggle() {
       className="flex items-center gap-3 rounded-full border-2 border-tq-line bg-tq-surface py-2 pe-2 ps-5 font-mono text-sm font-bold"
       dir="ltr"
     >
-      Tuwaiq Mode
+      Wireframe
       <span
-        className={`flex h-8 w-16 items-center rounded-full px-1 transition-colors ${on ? "justify-end bg-tq-cyan" : "justify-start bg-tq-line"}`}
+        className={`flex h-8 w-16 items-center rounded-full px-1 transition-colors ${on ? "justify-end bg-tq-apricot" : "justify-start bg-tq-line"}`}
       >
         <motion.span layout className="grid size-6 place-items-center rounded-full bg-tq-paper text-[9px] text-tq-bg">
           {on ? "ON" : "OFF"}
@@ -105,7 +106,11 @@ function ModeToggle() {
 
 function StickerBoard() {
   const board = useRef<HTMLDivElement>(null);
-  const keys = ["CTRL", "IDEA", "BUILD"];
+  const keys = [
+    { k: "MODEL", Icon: CubeIcon },
+    { k: "LIGHT", Icon: LightIcon },
+    { k: "RENDER", Icon: CameraIcon },
+  ];
   return (
     <div ref={board} dir="ltr" className="relative h-[min(560px,64vh)] w-full" aria-hidden="true">
       <Sticker i={0} x={30} y={4} r={-4} board={board}>
@@ -115,45 +120,45 @@ function StickerBoard() {
         </div>
       </Sticker>
       <Sticker i={1} x={2} y={8} r={-8} board={board}>
-        <div className="w-40 rounded-md bg-tq-orange p-4 font-mono text-[13px] font-extrabold leading-snug text-tq-bg">
+        <div className="w-40 rounded-md bg-tq-apricot p-4 font-mono text-[13px] font-extrabold leading-snug text-tq-bg">
           GOOD
           <br />
-          CODE_
+          MESH_
           <br />
           BRIGHTER
           <br />
-          TOMORROWS <span className="font-sans">:)</span>
+          RENDERS <span className="font-sans">:)</span>
         </div>
       </Sticker>
       <Sticker i={2} x={72} y={30} r={8} board={board}>
-        <div className="font-mono text-[5.5rem] font-extrabold leading-none tracking-[-0.12em]" dir="ltr">
-          <span className="text-tq-violet">&lt;</span>
-          <span className="text-tq-cyan">/</span>
-          <span className="text-tq-violet">&gt;</span>
+        <div className="relative" dir="ltr">
+          <CubeIcon size="6rem" strokeWidth={1.3} className="text-tq-violet" />
+          <SphereIcon size="2.6rem" strokeWidth={1.6} className="absolute -bottom-2 -right-4 text-tq-apricot" />
         </div>
       </Sticker>
       <Sticker i={3} x={4} y={60} r={5} board={board}>
         <div className="flex gap-2.5" dir="ltr">
-          {keys.map((k, n) => (
+          {keys.map(({ k, Icon }, n) => (
             <span
               key={k}
-              className={`key grid h-16 min-w-16 place-items-center px-3 font-mono text-sm font-bold ${n === 2 ? "bg-tq-purple! text-white!" : ""}`}
+              className={`key flex h-16 min-w-16 flex-col items-center justify-center gap-1 px-3 font-mono text-[11px] font-bold ${n === 2 ? "bg-tq-purple! text-white!" : ""}`}
             >
+              <Icon size={18} className={n === 2 ? "text-tq-apricot" : "text-tq-violet"} />
               {k}
             </span>
           ))}
         </div>
       </Sticker>
       <Sticker i={4} x={24} y={43} r={-2} board={board}>
-        <div className="rounded-lg border-2 border-tq-line bg-tq-bg px-3.5 py-2 font-mono text-[12px] text-tq-muted" dir="ltr">
-          <span className="text-tq-violet">$</span> git commit -m <span className="text-tq-cyan">"hello, track"</span>
+        <div className="flex items-center gap-2 rounded-lg border-2 border-tq-line bg-tq-bg px-3.5 py-2 font-mono text-[12px] text-tq-muted" dir="ltr">
+          <AxesIcon size={16} /> User Perspective · <span className="text-tq-apricot">hello, track</span>
         </div>
       </Sticker>
       <Sticker i={5} x={46} y={82} r={-3} board={board}>
         <ModeToggle />
       </Sticker>
       <p className="absolute bottom-0 left-0 font-mono text-[11px] text-tq-muted/60" dir="ltr">
-        // canvas · drag to rearrange
+        viewport · drag to rearrange
       </p>
     </div>
   );
@@ -187,10 +192,10 @@ function PromptField({
         <bdi>{label}</bdi>
       </p>
       <label className="flex items-center gap-2">
-        <span className="w-[4.25rem] shrink-0 text-tq-muted">
-          <span className="text-tq-violet">&gt;</span> {cmd}:
+        <span className="w-[4.75rem] shrink-0 text-tq-muted">
+          <span className="text-tq-violet">▸</span> {cmd}:
         </span>
-        <span className="text-tq-cyan">[</span>
+        <span className="text-tq-apricot">[</span>
         <input
           ref={inputRef}
           value={value}
@@ -205,15 +210,15 @@ function PromptField({
           aria-label={label}
           aria-required="true"
           placeholder={placeholder}
-          className="h-11 w-0 min-w-0 flex-1 border-b-2 border-dashed border-tq-line bg-transparent px-1 font-sans text-base text-tq-paper caret-tq-cyan outline-none transition-colors placeholder:text-tq-muted/55 focus:border-tq-cyan"
+          className="h-11 w-0 min-w-0 flex-1 border-b-2 border-dashed border-tq-line bg-transparent px-1 font-sans text-base text-tq-paper caret-tq-apricot outline-none transition-colors placeholder:text-tq-muted/55 focus:border-tq-apricot"
         />
-        <span className="text-tq-cyan">]</span>
+        <span className="text-tq-apricot">]</span>
       </label>
     </div>
   );
 }
 
-/** "Initializing member": full name, major and year, typed into the boot session rather than a form. */
+/** "Adding member to scene": full name, major and year, typed into the render log rather than a form. */
 function MemberPrompt({ value, onChange, onSubmit }: { value: Member; onChange: (m: Member) => void; onSubmit: () => void }) {
   const nameRef = useRef<HTMLInputElement>(null);
   const majorRef = useRef<HTMLInputElement>(null);
@@ -242,7 +247,7 @@ function MemberPrompt({ value, onChange, onSubmit }: { value: Member; onChange: 
       className="border-l-2 border-tq-line ps-4 text-left font-mono text-[13px] leading-7 sm:text-sm"
     >
       <p className="text-tq-muted">
-        <span className="text-tq-violet">&gt;</span> initializing member...
+        <span className="text-tq-violet">▸</span> adding member to scene...
       </p>
       <PromptField
         label="الاسم الكامل"
@@ -269,8 +274,8 @@ function MemberPrompt({ value, onChange, onSubmit }: { value: Member; onChange: 
           <bdi>السنة الدراسية</bdi>
         </p>
         <div className="flex items-start gap-2">
-          <span className="w-[4.25rem] shrink-0 pt-2.5 text-tq-muted">
-            <span className="text-tq-violet">&gt;</span> year:
+          <span className="w-[4.75rem] shrink-0 pt-2.5 text-tq-muted">
+            <span className="text-tq-violet">▸</span> year:
           </span>
           <div
             ref={yearRef}
@@ -297,9 +302,9 @@ function MemberPrompt({ value, onChange, onSubmit }: { value: Member; onChange: 
       </div>
       <p className="mt-2 min-h-7" aria-live="polite">
         {ok && (
-          <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} className="inline-block text-tq-cyan">
+          <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} className="inline-block text-tq-apricot">
             ✓ <span className="text-tq-muted">member:</span> <bdi className="text-tq-paper">{value.fullName.trim()}</bdi>
-            <span className="text-tq-muted"> · session initialized</span>
+            <span className="text-tq-muted"> · object added</span>
           </motion.span>
         )}
       </p>
@@ -339,7 +344,7 @@ export default function IntroScreen({
       <header className="flex items-center justify-between py-2">
         <Brand />
         <span dir="ltr" className="font-mono text-[11px] text-tq-muted">
-          // v1.0 · FALL 2026
+          v1.0 · FALL 2026
         </span>
       </header>
 
@@ -348,9 +353,10 @@ export default function IntroScreen({
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mb-4 font-mono text-xs text-tq-violet"
+            className="mb-4 flex items-center gap-2 font-mono text-xs text-tq-violet"
           >
-            <bdi dir="ltr">// 01 — INIT</bdi>
+            <MeshIcon size={14} className="text-tq-apricot" />
+            <bdi dir="ltr">01 — SCENE SETUP</bdi>
           </motion.p>
           <Wordmark />
 
@@ -359,11 +365,11 @@ export default function IntroScreen({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.35 }}
           >
-            <h2 className="mt-8 text-[2.1rem] font-bold leading-tight sm:text-5xl">خلّنا نعرفك أكثر.</h2>
+            <h2 className="mt-8 text-[2.1rem] font-bold leading-tight sm:text-5xl">خلّنا نعرفك أكثر<span className="text-tq-apricot">.</span></h2>
             <p className="mt-3 max-w-md text-[15.5px] leading-8 text-tq-muted sm:text-[17px]">
               <Mixed
-                text="كم سؤال سريع يساعدنا نفهم مستواك، اهتماماتك، وإيش ودك تطلع فيه من Programming Track."
-                latinClass="text-tq-paper"
+                text="كم سؤال سريع يساعدنا نفهم مستواك، اهتماماتك، وإيش ودك تطلع فيه من 3D Track."
+                latinClass="text-tq-apricot"
               />
             </p>
           </motion.div>

@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { isLatin } from "./ui";
+import { CameraIcon, CubeIcon } from "./Icons3D";
 
 const tokens = (v: string) =>
   v
@@ -7,7 +8,7 @@ const tokens = (v: string) =>
     .map((t) => t.trim().toLowerCase())
     .filter(Boolean);
 
-/** Text answer as a small shell prompt. Grows with its content; optional tap-to-add tokens. */
+/** Text answer as a small viewport input panel. Grows with its content; optional tap-to-add tokens. */
 export default function TerminalInput({
   value,
   onChange,
@@ -50,23 +51,22 @@ export default function TerminalInput({
 
   return (
     <div>
-      <div className="overflow-hidden rounded-xl border-2 border-tq-line bg-tq-surface/85 transition-colors focus-within:border-tq-cyan">
+      <div className="overflow-hidden rounded-xl border-2 border-tq-line bg-tq-surface/85 transition-colors focus-within:border-tq-apricot">
         {!compact && (
           <div
             dir="ltr"
             className="flex items-center justify-between border-b-2 border-tq-line px-4 py-2 font-mono text-[11px] text-tq-muted"
           >
-            <span className="flex gap-1.5" aria-hidden="true">
-              <span className="size-2 rounded-full bg-tq-orange" />
-              <span className="size-2 rounded-full bg-tq-violet" />
-              <span className="size-2 rounded-full bg-tq-cyan" />
+            <span className="flex items-center gap-2" aria-hidden="true">
+              <CameraIcon size={14} className="text-tq-violet" />
+              <span>viewport · text</span>
             </span>
-            <span>~/tuwaiq/init/{file}</span>
+            <span>scene/3d-track/{file}</span>
           </div>
         )}
         <label className="flex items-start gap-3 px-4 py-3.5">
-          <span dir="ltr" className="pt-[3px] font-mono text-[15px] font-bold text-tq-cyan" aria-hidden="true">
-            ❯
+          <span dir="ltr" className="pt-[5px] text-tq-apricot" aria-hidden="true">
+            <CubeIcon size={17} />
           </span>
           <span className="sr-only">{label}</span>
           <textarea
@@ -84,7 +84,7 @@ export default function TerminalInput({
                 onSubmit();
               }
             }}
-            className="block w-full resize-none bg-transparent text-base leading-7 text-tq-paper caret-tq-cyan outline-none placeholder:text-tq-muted/60"
+            className="block w-full resize-none bg-transparent text-base leading-7 text-tq-paper caret-tq-apricot outline-none placeholder:text-tq-muted/60"
             style={{ fontFamily: isLatin(value || placeholder) ? "var(--font-mono)" : undefined }}
           />
         </label>
@@ -106,7 +106,7 @@ export default function TerminalInput({
                 type="button"
                 onClick={() => add(s)}
                 disabled={on}
-                className="h-10 rounded-lg border-2 border-dashed border-tq-line px-3 font-mono text-[13px] text-tq-muted transition-colors hover:border-tq-violet hover:text-tq-paper disabled:border-solid disabled:border-tq-cyan/50 disabled:text-tq-cyan"
+                className="h-10 rounded-lg border-2 border-dashed border-tq-line px-3 font-mono text-[13px] text-tq-muted transition-colors hover:border-tq-apricot hover:text-tq-paper disabled:border-solid disabled:border-tq-apricot/50 disabled:text-tq-apricot"
               >
                 {on ? "✓" : "+"} {s}
               </button>

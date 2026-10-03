@@ -7,11 +7,11 @@ import type { SubmitMode } from "../services/submissionService";
 import type { Submission } from "../types/assessment";
 
 const LOG = [
-  { text: "git commit -m \"init: member profile\"", tone: "cmd" as const },
-  { text: "profile saved", tone: "out" as const },
-  { text: "interests mapped", tone: "out" as const },
+  { text: "render --final \"member profile\"", tone: "cmd" as const },
+  { text: "profile modeled", tone: "out" as const },
+  { text: "interests textured", tone: "out" as const },
   { text: "response received", tone: "out" as const },
-  { text: "ready_to_build = true", tone: "ok" as const },
+  { text: "frame rendered", tone: "ok" as const },
 ];
 
 /** 03 — COMPLETE: the peak builds itself row by row, then the flag goes up. */
@@ -32,7 +32,7 @@ export default function SuccessScreen({ submission, mode }: { submission: Submis
       <header className="flex items-center justify-between py-2">
         <Brand />
         <span dir="ltr" className="font-mono text-[11px] text-tq-muted">
-          // 03 — COMPLETE
+          03 — RENDER COMPLETE
         </span>
       </header>
 
@@ -45,11 +45,11 @@ export default function SuccessScreen({ submission, mode }: { submission: Submis
             transition={{ delay: 0.75 }}
             className="text-right font-mono text-[clamp(2.4rem,11vw,5.25rem)] font-extrabold leading-[0.95] tracking-[-0.06em] lg:text-left"
           >
-            <span className="block text-tq-paper">COMMIT</span>
+            <span className="block text-tq-paper">RENDER</span>
             <span className="block">
               <span style={{ color: brandColor(0.55) }}>COMPLETE</span>{" "}
               <motion.span
-                className="inline-block text-tq-cyan"
+                className="inline-block text-tq-apricot"
                 initial={{ scale: 0, rotate: -30 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", stiffness: 500, damping: 14, delay: 1.05 }}
@@ -64,7 +64,7 @@ export default function SuccessScreen({ submission, mode }: { submission: Submis
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
           >
-            <h1 className="mt-8 text-[2rem] font-bold leading-tight sm:text-5xl">وصلتنا إجاباتك.</h1>
+            <h1 className="mt-8 text-[2rem] font-bold leading-tight sm:text-5xl">وصلتنا إجاباتك<span className="text-tq-apricot">.</span></h1>
             <p className="mt-3 max-w-md text-[16px] leading-8 text-tq-muted sm:text-[18px]">
               الحين دورنا نبني تجربة تستاهل وقتك.
             </p>
@@ -73,15 +73,15 @@ export default function SuccessScreen({ submission, mode }: { submission: Submis
           <TerminalDetail lines={LOG} delay={1.1} charMs={14} pauseMs={120} className="mt-8" />
 
           <p dir="ltr" className="mt-6 text-right font-mono text-[11px] text-tq-muted/70 lg:text-left">
-            [main {hash}] <bdi className="text-tq-paper">{submission.fullName}</bdi>
+            [frame {hash}] <bdi className="text-tq-paper">{submission.fullName}</bdi>
             {submission.favoriteColor.hex && (
               <span
                 className="mx-1.5 inline-block size-2.5 rounded-[2px] align-middle"
                 style={{ background: submission.favoriteColor.hex, boxShadow: "0 0 0 1px rgb(255 255 255 / 0.3)" }}
               />
             )}
-            · {PEAK_ROWS} answers committed
-            {mode === "local" && <span className="text-tq-orange"> · dev mode: logged to console</span>}
+            · {PEAK_ROWS} answers rendered
+            {mode === "local" && <span className="text-tq-warn"> · dev mode: logged to console</span>}
           </p>
         </div>
 
@@ -103,7 +103,7 @@ export default function SuccessScreen({ submission, mode }: { submission: Submis
       </main>
 
       <footer dir="ltr" className="flex justify-between font-mono text-[11px] text-tq-muted/60">
-        <span>TUWAIQ × UJ — PROGRAMMING</span>
+        <span>TUWAIQ × UJ — 3D TRACK</span>
         <span className="hidden sm:inline">SMALL STEPS. BIG BUILDS.</span>
       </footer>
     </div>
