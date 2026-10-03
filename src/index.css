@@ -1,0 +1,277 @@
+@import "tailwindcss";
+
+/* Tuwaiq × UJ Programming palette. Purple + turquoise carry the identity,
+   orange is a rare accent, dark dominates. */
+@theme {
+  --color-tq-purple: #4f29b7;
+  --color-tq-violet: #a380ff;
+  --color-tq-cyan: #57e3d8;
+  --color-tq-orange: #f4a664;
+  --color-tq-ink: #262626;
+  --color-tq-paper: #ededed;
+
+  --color-tq-bg: #0e0b18;
+  --color-tq-surface: #161225;
+  --color-tq-raised: #1e1833;
+  --color-tq-line: #342c4e;
+  --color-tq-muted: #9a93b3;
+
+  --font-sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    background: var(--color-tq-bg);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--color-tq-bg);
+    color: var(--color-tq-paper);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-tq-purple);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-tq-cyan);
+    outline-offset: 3px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+/* ---------- Backdrop: IDE grid paper with a violet glow at the top ---------- */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 28rem at 50% -8rem, rgb(79 41 183 / 0.38), transparent 70%),
+    radial-gradient(30rem 20rem at 0% 110%, rgb(87 227 216 / 0.08), transparent 70%);
+}
+
+.backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgb(163 128 255 / 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(163 128 255 / 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / 0.35) 70%, transparent 100%);
+}
+
+/* ---------- Pop-out: a foreground plate lifted off a dotted pixel shadow ----------
+   The plate sits up and toward the reading start (RTL), so the dots show at
+   the bottom-left. Hover lifts it further, press / selected pushes it down. */
+.pop {
+  --lift: 5px;
+  --pop-bg: var(--color-tq-surface);
+  --pop-edge: var(--color-tq-line);
+  --pop-dot: rgb(163 128 255 / 0.55);
+  --pop-fg: var(--color-tq-paper);
+  position: relative;
+  display: block;
+  isolation: isolate;
+  border-radius: 14px;
+  text-align: start;
+}
+
+.pop__back {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  border: 2px solid var(--pop-edge);
+  background-color: var(--color-tq-bg);
+  background-image: radial-gradient(var(--pop-dot) 30%, transparent 32%);
+  background-size: 6px 6px;
+  transition: border-color 0.2s;
+}
+
+.pop__front {
+  position: relative;
+  height: 100%;
+  border-radius: inherit;
+  border: 2px solid var(--pop-edge);
+  background: var(--pop-bg);
+  color: var(--pop-fg);
+  transform: translate(var(--lift), calc(var(--lift) * -1));
+  transition:
+    transform 0.22s cubic-bezier(0.3, 1.6, 0.5, 1),
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+
+@media (hover: hover) {
+  .pop:hover:not(:disabled) {
+    --lift: 7px;
+    --pop-edge: var(--color-tq-violet);
+  }
+}
+
+.pop:active:not(:disabled) {
+  --lift: 1px;
+}
+
+.pop[aria-checked="true"],
+.pop[aria-pressed="true"] {
+  --lift: 2px;
+  --pop-bg: var(--color-tq-purple);
+  --pop-edge: var(--color-tq-cyan);
+  --pop-dot: var(--color-tq-cyan);
+  --pop-fg: #fff;
+}
+
+.pop--primary {
+  --pop-bg: var(--color-tq-cyan);
+  --pop-edge: var(--color-tq-cyan);
+  --pop-dot: var(--color-tq-cyan);
+  --pop-fg: var(--color-tq-bg);
+}
+
+@media (hover: hover) {
+  .pop--primary:hover:not(:disabled) {
+    --pop-edge: #fff;
+  }
+}
+
+.pop:disabled {
+  --lift: 0px;
+  --pop-bg: var(--color-tq-surface);
+  --pop-edge: var(--color-tq-line);
+  --pop-fg: var(--color-tq-muted);
+  --pop-dot: transparent;
+  cursor: not-allowed;
+}
+
+/* ---------- Keycaps (multi-select chips) ---------- */
+.key {
+  position: relative;
+  border: 2px solid var(--color-tq-line);
+  border-radius: 12px;
+  background: var(--color-tq-raised);
+  color: var(--color-tq-paper);
+  box-shadow: 0 5px 0 0 #0a0812, 0 5px 0 2px var(--color-tq-line);
+  transition:
+    transform 0.12s ease-out,
+    box-shadow 0.12s ease-out,
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+@media (hover: hover) {
+  .key:hover:not([aria-disabled="true"]) {
+    border-color: var(--color-tq-violet);
+  }
+}
+
+.key:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 0 #0a0812, 0 2px 0 2px var(--color-tq-line);
+}
+
+.key[aria-checked="true"] {
+  transform: translateY(3px);
+  border-color: var(--color-tq-cyan);
+  background: var(--color-tq-cyan);
+  color: var(--color-tq-bg);
+  box-shadow: 0 2px 0 0 #0a0812, 0 2px 0 2px #2a9e96;
+}
+
+.key[aria-disabled="true"] {
+  opacity: 0.4;
+}
+
+/* ---------- Rolling label (text printed twice, slides up on hover) ---------- */
+.roll {
+  display: inline-block;
+  overflow: hidden;
+  height: 1.35em;
+  line-height: 1.35;
+  vertical-align: middle;
+}
+
+.roll > span {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.roll > span > span {
+  display: block;
+  height: 1.35em;
+}
+
+@media (hover: hover) {
+  .pop:hover:not(:disabled) .roll > span,
+  .ghost:hover .roll > span {
+    transform: translateY(-50%);
+  }
+}
+
+/* ---------- Terminal bits ---------- */
+.cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-inline-start: 0.12em;
+  vertical-align: -0.15em;
+  background: currentColor;
+  animation: blink 1.05s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.ping::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 2px solid var(--color-tq-cyan);
+  border-radius: 3px;
+  animation: ping 1.6s ease-out infinite;
+}
+
+@keyframes ping {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

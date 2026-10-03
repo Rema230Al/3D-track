@@ -1,0 +1,128 @@
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+
+/**
+ * Official logo slot. Drop the Tuwaiq × UJ Programming logo into /public/brand/
+ * and set its file name here (e.g. "brand/logo.svg"); until then the text wordmark is used.
+ */
+export const LOGO_SRC: string | null = null;
+
+export const pad = (n: number) => String(n).padStart(2, "0");
+
+/** Short, stable, git-looking hash for any string. */
+export function shortHash(str: string) {
+  let h = 5381;
+  for (const ch of str) h = ((h << 5) + h + ch.charCodeAt(0)) >>> 0;
+  return h.toString(16).padStart(7, "0").slice(0, 7);
+}
+
+const STOPS = [
+  [0x4f, 0x29, 0xb7],
+  [0xa3, 0x80, 0xff],
+  [0x57, 0xe3, 0xd8],
+];
+
+/** Tuwaiq gradient (purple → violet → turquoise) sampled at t ∈ [0, 1]. */
+export function brandColor(t: number) {
+  const x = Math.min(1, Math.max(0, t)) * (STOPS.length - 1);
+  const i = Math.min(STOPS.length - 2, Math.floor(x));
+  const f = x - i;
+  const [a, b] = [STOPS[i], STOPS[i + 1]];
+  return `rgb(${a.map((v, k) => Math.round(v + (b[k] - v) * f)).join(" ")})`;
+}
+
+/** Stable pseudo-random number in [0, 1) so decorative layouts are identical on every visit. */
+export function seeded(i: number, k = 0) {
+  const x = Math.sin((i + 1) * 12.9898 + k * 78.233) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+const LATIN_RUN = /([A-Za-z][A-Za-z0-9+#./&\- ]*[A-Za-z0-9+#])/g;
+const HAS_ARABIC = /[؀-ۿ]/;
+
+export const isLatin = (text: string) => !HAS_ARABIC.test(text);
+
+/**
+ * Arabic text with embedded English terms. Each Latin run is isolated as LTR so
+ * "Programming Track", "AI Agents", "Fine-Tuning"… keep their order inside RTL.
+ */
+export function Mixed({ text, latinClass = "" }: { text: string; latinClass?: string }) {
+  if (isLatin(text)) return <bdi dir="ltr">{text}</bdi>;
+  return (
+    <>
+      {text.split(LATIN_RUN).map((part, i) =>
+        i % 2 ? (
+          <bdi key={i} dir="ltr" className={latinClass}>
+            {part}
+          </bdi>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
+
+export function Brand({ className = "" }: { className?: string }) {
+  return (
+    <div className={`flex items-center gap-3 ${className}`} dir="ltr">
+      {LOGO_SRC && <img src={LOGO_SRC} alt="Tuwaiq Club" className="h-9 w-auto" />}
+      <div className="leading-none">
+        <p className="font-mono text-[11px] font-bold tracking-[0.34em] text-tq-paper">
+          TUWAIQ <span className="text-tq-cyan">×</span> UJ
+        </p>
+        <p className="mt-1.5 flex items-center gap-2 font-mono text-[9px] font-medium tracking-[0.36em] text-tq-violet">
+          <span className="h-px w-3 bg-current" />
+          PROGRAMMING TRACK
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** Label printed twice; on hover the stack rolls up to the copy. */
+export function Roll({ children }: { children: ReactNode }) {
+  return (
+    <span className="roll">
+      <span>
+        <span>{children}</span>
+        <span aria-hidden="true">{children}</span>
+      </span>
+    </span>
+  );
+}
+
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  primary?: boolean;
+  icon?: ReactNode;
+  kbd?: string;
+};
+
+/** Pop-out button: a plate lifted off a dotted pixel shadow. */
+export function PopButton({ primary, icon, kbd, children, className = "", ...rest }: ButtonProps) {
+  return (
+    <button type="button" className={`pop ${primary ? "pop--primary" : ""} ${className}`} {...rest}>
+      <span className="pop__back" />
+      <span className="pop__front flex h-full items-center justify-center gap-3 px-6 text-[17px] font-bold">
+        <Roll>{children}</Roll>
+        {icon}
+        {kbd && (
+          <kbd className="hidden rounded border border-current/30 px-1.5 py-0.5 font-mono text-[10px] font-medium opacity-70 lg:inline">
+            {kbd}
+          </kbd>
+        )}
+      </span>
+    </button>
+  );
+}
+
+export function GhostButton({ children, className = "", ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      className={`ghost inline-flex h-14 items-center justify-center gap-2 rounded-xl px-4 text-[15px] font-medium text-tq-muted transition-colors hover:text-tq-paper disabled:opacity-40 ${className}`}
+      {...rest}
+    >
+      <Roll>{children}</Roll>
+    </button>
+  );
+}
