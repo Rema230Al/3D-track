@@ -3,7 +3,6 @@ import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import IntroScreen from "./screens/IntroScreen";
 import AssessmentScreen, { type SubmitState } from "./screens/AssessmentScreen";
 import SuccessScreen from "./screens/SuccessScreen";
-import { AxesGizmo } from "./components/Icons3D";
 import Floor from "./components/Floor";
 import { emptyAnswers, emptyMember } from "./data/questions";
 import {
@@ -76,7 +75,6 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <Floor />
-      <AxesGizmo className="gizmo hidden sm:block" />
       <AnimatePresence mode="wait">
         <motion.div
           key={stage}

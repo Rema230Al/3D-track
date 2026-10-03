@@ -84,33 +84,3 @@ export const AxesIcon = (p: IconProps) => (
     <circle cx="7" cy="17" r="1.4" fill="currentColor" stroke="none" />
   </Icon>
 );
-
-/**
- * Navigation gizmo like the one in a 3D viewport's corner: three labelled axes
- * around a pivot. Pure decoration.
- */
-export function AxesGizmo({ className = "" }: { className?: string }) {
-  const axis = (x: number, y: number, color: string, label: string, back = false) => (
-    <g>
-      <line x1="40" y1="40" x2={x} y2={y} stroke={color} strokeWidth="2.2" strokeLinecap="round" opacity={back ? 0.45 : 1} />
-      <circle cx={x} cy={y} r="7.5" fill={back ? "transparent" : color} stroke={color} strokeWidth="1.6" opacity={back ? 0.55 : 1} />
-      {!back && (
-        <text x={x} y={y + 3.1} textAnchor="middle" fontSize="8.5" fontWeight="800" fontFamily="var(--font-mono)" fill="#0e0b18">
-          {label}
-        </text>
-      )}
-    </g>
-  );
-  return (
-    <svg viewBox="0 0 80 80" className={className} aria-hidden="true">
-      <circle cx="40" cy="40" r="36" fill="rgb(22 18 37 / 0.6)" stroke="rgb(163 128 255 / 0.18)" />
-      {axis(16, 54, "var(--color-ax-x)", "X", true)}
-      {axis(58, 54, "var(--color-ax-y)", "Y", true)}
-      {axis(40, 68, "var(--color-ax-z)", "Z", true)}
-      {axis(22, 26, "var(--color-ax-y)", "Y")}
-      {axis(40, 12, "var(--color-ax-z)", "Z")}
-      {axis(64, 26, "var(--color-ax-x)", "X")}
-      <circle cx="40" cy="40" r="2.4" fill="var(--color-tq-apricot)" />
-    </svg>
-  );
-}
