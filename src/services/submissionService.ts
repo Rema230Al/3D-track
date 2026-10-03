@@ -17,6 +17,13 @@ export function withNote(value: string, note?: string) {
   return value === OTHER && note?.trim() ? `${OTHER}: ${note.trim()}` : value;
 }
 
+/** Text typed in an optional field, only if the selected option offers one. */
+function optionalNoteFor(id: "explorePreference", answers: Answers, others: OtherNotes) {
+  const q = questions.find((qq) => qq.id === id);
+  const opt = q?.kind === "single" ? q.options.find((o) => o.label === answers[id]) : undefined;
+  return opt?.optionalNote ? (others[id] ?? "").trim() : "";
+}
+
 export function buildSubmission(member: Member, answers: Answers, others: OtherNotes): Submission {
   const list = (id: "designTools" | "trackAvoidances") => answers[id].map((v) => withNote(v, others[id]));
   const { score, level } = levelOf(answers);
@@ -36,6 +43,7 @@ export function buildSubmission(member: Member, answers: Answers, others: OtherN
     designTools: list("designTools"),
     preferredActivities: answers.preferredActivities,
     explorePreference: answers.explorePreference,
+    explorePreferenceDetails: optionalNoteFor("explorePreference", answers, others),
 
     trackAvoidances: list("trackAvoidances"),
     helpingPreference: answers.helpingPreference,

@@ -168,7 +168,7 @@ export default function AssessmentScreen({
       if (q.kind === "text" || !q.options[i]) return;
       if (q.kind === "color") return onAnswer(q.id, q.options[i]);
       const opt = q.options[i];
-      if (q.kind === "single") return pickSingle(opt.label, opt.other || !!opt.details);
+      if (q.kind === "single") return pickSingle(opt.label, opt.other || !!opt.details || !!opt.optionalNote);
       document.querySelectorAll<HTMLButtonElement>("[role=checkbox]")[i]?.click();
     },
   };
@@ -188,7 +188,9 @@ export default function AssessmentScreen({
   // An option that asks for details ("what exactly?") opens a required field under the choices.
   const picked = q.kind === "single" ? q.options.find((o) => o.label === value) : undefined;
   const detailsPrompt = picked?.details;
-  const noteOpen = otherSelected || !!detailsPrompt;
+  // An option with `optionalNote` opens an optional field; its placeholder says what to write.
+  const optionalNote = picked?.optionalNote;
+  const noteOpen = otherSelected || !!detailsPrompt || !!optionalNote;
   const otherRequired = (q.kind === "single" || q.kind === "multi") && q.options.some((o) => o.other && needsNote(o));
 
   return (
@@ -264,7 +266,7 @@ export default function AssessmentScreen({
                         index={i}
                         label={opt.label}
                         selected={value === opt.label}
-                        onSelect={() => pickSingle(opt.label, opt.other || !!opt.details)}
+                        onSelect={() => pickSingle(opt.label, opt.other || !!opt.details || !!opt.optionalNote)}
                       />
                     ))}
                   </div>
@@ -306,28 +308,32 @@ export default function AssessmentScreen({
                 <AnimatePresence>
                   {noteOpen && (
                     <motion.div
-                      key={detailsPrompt ?? OTHER}
+                      key={detailsPrompt ?? optionalNote ?? OTHER}
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <p className={`mb-2 mt-6 ${detailsPrompt ? "text-[16px] font-medium text-tq-paper" : "text-[14px] text-tq-muted"}`}>
-                        {detailsPrompt ? (
-                          <Mixed text={detailsPrompt} />
-                        ) : otherRequired ? (
-                          "وضّح لنا «أخرى»"
-                        ) : (
-                          "وضّح لنا «أخرى» (اختياري)"
-                        )}
-                      </p>
+                      {optionalNote ? (
+                        <div className="mt-6" />
+                      ) : (
+                        <p className={`mb-2 mt-6 ${detailsPrompt ? "text-[16px] font-medium text-tq-paper" : "text-[14px] text-tq-muted"}`}>
+                          {detailsPrompt ? (
+                            <Mixed text={detailsPrompt} />
+                          ) : otherRequired ? (
+                            "وضّح لنا «أخرى»"
+                          ) : (
+                            "وضّح لنا «أخرى» (اختياري)"
+                          )}
+                        </p>
+                      )}
                       <TerminalInput
                         compact
                         value={others[q.id] ?? ""}
                         onChange={(v) => onOther(q.id, v)}
-                        placeholder="اكتب هنا..."
+                        placeholder={optionalNote ?? "اكتب هنا..."}
                         scene={q.object}
-                        label={detailsPrompt ?? OTHER}
+                        label={detailsPrompt ?? optionalNote ?? OTHER}
                         onSubmit={next}
                       />
                     </motion.div>

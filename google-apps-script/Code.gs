@@ -15,7 +15,7 @@
 
 const SHEET_NAME = "Responses";
 /** Returned by doGet, so you can open the Web App URL and see which code is live. */
-const SCRIPT_VERSION = "3dp-v1-16q";
+const SCRIPT_VERSION = "3dp-v2-16q";
 
 const list_ = (v) => (Array.isArray(v) ? v.join(", ") : v || "");
 const text_ = (v) => (typeof v === "string" ? v : "");
@@ -39,6 +39,7 @@ const COLUMNS = [
   ["Design Tools", (d) => list_(d.designTools)],
   ["Preferred Activities", (d) => list_(d.preferredActivities)],
   ["Explore Preference", (d) => text_(d.explorePreference)],
+  ["Explore Preference Details", (d) => text_(d.explorePreferenceDetails)],
 
   ["Track Avoidances", (d) => list_(d.trackAvoidances)],
   ["Helping Preference", (d) => text_(d.helpingPreference)],

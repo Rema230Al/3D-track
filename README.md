@@ -46,7 +46,7 @@ Answers go to the 3D Printing Track's **own** Google Sheet. Never reuse the Prog
 3. Replace the editor contents with `google-apps-script/Code.gs` and save.
 4. Optional: run **`setupSheet`** once (pick it in the function menu, then **Run**, and authorize). It creates the **`Responses`** tab with its header row. Otherwise the tab is created on the first submission. Its columns:
 
-   `Full Name · Major · Academic Year · Submitted At · Level Score · Level · 3D Printing Experience · Project Ability · Teamwork Experience · Design Tools · Preferred Activities · Explore Preference · Track Avoidances · Helping Preference · Project Type · Preferred Times · Activity Format · Potential Blocker · Discord & Notion Joined · Success Definition · Favorite Color · Favorite Color Hex · Note`
+   `Full Name · Major · Academic Year · Submitted At · Level Score · Level · 3D Printing Experience · Project Ability · Teamwork Experience · Design Tools · Preferred Activities · Explore Preference · Explore Preference Details · Track Avoidances · Helping Preference · Project Type · Preferred Times · Activity Format · Potential Blocker · Discord & Notion Joined · Success Definition · Favorite Color · Favorite Color Hex · Note`
 
    Multi-select answers are stored comma-separated, and a chosen «أخرى» is saved as `أخرى: <what they typed>`. Values are written by header name, so you can reorder columns or add your own. Headers are only ever added (missing ones go at the end of row 1), and submitted rows are never touched.
 5. Click **Deploy → New deployment → ⚙ → Web app**. Set *Execute as*: **Me** and *Who has access*: **Anyone**, then deploy and authorize.

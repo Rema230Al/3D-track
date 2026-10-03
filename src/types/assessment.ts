@@ -65,6 +65,8 @@ export interface Submission {
   designTools: string[];
   preferredActivities: string[];
   explorePreference: string;
+  /** Optional text typed under option 01 / 02 of question 6; empty otherwise. */
+  explorePreferenceDetails: string;
 
   trackAvoidances: string[];
   helpingPreference: string;
@@ -93,6 +95,8 @@ export interface Option {
   exclusive?: boolean;
   /** single only: selecting it asks for required details, with this prompt. */
   details?: string;
+  /** single only: selecting it opens an OPTIONAL text field with this placeholder. */
+  optionalNote?: string;
 }
 
 interface QuestionBase {

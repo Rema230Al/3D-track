@@ -103,7 +103,11 @@ export const questions: Question[] = [
     kind: "single",
     title: "عادي تجرب شيء جديد ولا تتعمق في نفس اللي متعود عليه من مجالات و مهارات و برامج؟",
     hint: CLOSEST_HINT,
-    options: [{ label: "أجرب شي جديد كلياً" }, { label: "أتعمق في شي أعرفه" }, { label: "مزيج بين الاثنين" }],
+    options: [
+      { label: "أجرب شي جديد كلياً", optionalNote: "وش الشي الجديد اللي ودك تجربه؟ (اختياري)" },
+      { label: "أتعمق في شي أعرفه", optionalNote: "وش الشي اللي ودك تتعمق فيه؟ (اختياري)" },
+      { label: "مزيج بين الاثنين" },
+    ],
   },
 
   // ----- Expectations & roles -----
