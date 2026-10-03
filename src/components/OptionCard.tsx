@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { Mixed, pad } from "./ui";
+import { Mixed, pad, tilt } from "./ui";
 
 /**
- * Large single-select option: an editor-line plate with a pixel check.
+ * Large single-select option: an extruded slab with a check; selecting presses it home.
  * With an `index` it shows a line number; without one just a neutral pixel bullet.
  */
 export default function OptionCard({
@@ -17,7 +17,7 @@ export default function OptionCard({
   onSelect: () => void;
 }) {
   return (
-    <button type="button" role="radio" aria-checked={selected} onClick={onSelect} className="pop group w-full">
+    <button type="button" role="radio" aria-checked={selected} onClick={onSelect} className="pop group w-full" {...tilt}>
       <span className="pop__back" />
       <span className="pop__front flex min-h-[60px] items-center gap-3 px-4 py-3 sm:gap-4 sm:px-5">
         {index !== undefined ? (

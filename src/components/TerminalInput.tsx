@@ -8,12 +8,12 @@ const tokens = (v: string) =>
     .map((t) => t.trim().toLowerCase())
     .filter(Boolean);
 
-/** Text answer as a small viewport input panel. Grows with its content; optional tap-to-add tokens. */
+/** Text answer as an extruded viewport panel. Grows with its content; optional tap-to-add tokens. */
 export default function TerminalInput({
   value,
   onChange,
   placeholder,
-  file,
+  scene,
   label,
   suggestions,
   multiline = false,
@@ -23,7 +23,8 @@ export default function TerminalInput({
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
-  file: string;
+  /** Scene object this answer belongs to, shown as "Scene › <name>". */
+  scene: string;
   label: string;
   suggestions?: string[];
   multiline?: boolean;
@@ -51,7 +52,7 @@ export default function TerminalInput({
 
   return (
     <div>
-      <div className="overflow-hidden rounded-xl border-2 border-tq-line bg-tq-surface/85 transition-colors focus-within:border-tq-apricot">
+      <div className="slab overflow-hidden rounded-xl border-2 border-tq-line bg-tq-surface transition-colors focus-within:border-tq-apricot">
         {!compact && (
           <div
             dir="ltr"
@@ -59,9 +60,9 @@ export default function TerminalInput({
           >
             <span className="flex items-center gap-2" aria-hidden="true">
               <CameraIcon size={14} className="text-tq-violet" />
-              <span>viewport · text</span>
+              <span>Edit Mode</span>
             </span>
-            <span>scene/3d-track/{file}</span>
+            <span>Scene › {scene}</span>
           </div>
         )}
         <label className="flex items-start gap-3 px-4 py-3.5">
@@ -90,8 +91,8 @@ export default function TerminalInput({
         </label>
         {!compact && (
           <div dir="ltr" className="flex justify-between px-4 pb-2 font-mono text-[11px] text-tq-muted/70">
-            <span>{value.trim().length} chars</span>
-            <span className="hidden lg:inline">{multiline ? "ctrl + ↵ next" : "↵ next"}</span>
+            <span>{value.trim().length} vertices</span>
+            <span className="hidden lg:inline">{multiline ? "ctrl + ↵ render" : "↵ render"}</span>
           </div>
         )}
       </div>

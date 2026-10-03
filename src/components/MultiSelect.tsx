@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Option } from "../types/assessment";
-import { isLatin } from "./ui";
+import { isLatin, tilt } from "./ui";
 
 /** Keycap chips. Handles an optional maximum and "exclusive" options (e.g. "none of these"). */
 export default function MultiSelect({
@@ -82,6 +82,7 @@ export default function MultiSelect({
               aria-checked={on}
               aria-disabled={atMax && !on}
               onClick={() => toggle(opt)}
+              {...tilt}
               className={`key flex min-h-12 items-center gap-2.5 px-4 ${
                 latin ? "font-mono text-[13.5px] font-medium" : "text-[15px] font-medium"
               }`}

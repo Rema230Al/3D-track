@@ -62,29 +62,14 @@
   }
 }
 
-/* ---------- Backdrop: a light 3D viewport grid (minor + major lines) on the plain base ---------- */
-.backdrop {
+/* ---------- Viewport floor: perspective grid on the plain base (drawn by <Floor />) ---------- */
+.floor {
   position: fixed;
   inset: 0;
   z-index: -1;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-}
-
-.backdrop::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgb(163 128 255 / 0.11) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(163 128 255 / 0.11) 1px, transparent 1px),
-    linear-gradient(rgb(163 128 255 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(163 128 255 / 0.05) 1px, transparent 1px);
-  background-size:
-    140px 140px,
-    140px 140px,
-    28px 28px,
-    28px 28px;
-  mask-image: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / 0.35) 70%, transparent 100%);
 }
 
 /* Corner navigation gizmo: decoration only, never over content on small screens. */
@@ -98,20 +83,25 @@
   pointer-events: none;
 }
 
-/* ---------- Pop-out: a foreground plate lifted off a dotted pixel shadow ----------
-   The plate sits up and toward the reading start (RTL), so the dots show at
-   the bottom-left. Hover lifts it further, press / selected pushes it down. */
+/* ---------- Pop-out: an extruded slab ----------
+   The face sits up and toward the reading start (RTL); a stack of hard shadows fills
+   the gap back to its footprint, so the side of the block shows at the bottom-left,
+   with a soft contact shadow under it. Hover lifts it further, press pushes it in.
+   --rx / --ry come from the pointer (see `tilt` in ui.tsx): desktop only. */
 .pop {
   --lift: 5px;
   --pop-bg: var(--color-tq-surface);
   --pop-edge: var(--color-tq-line);
-  --pop-dot: rgb(163 128 255 / 0.55);
+  --pop-side: #2b2346;
   --pop-fg: var(--color-tq-paper);
+  --pop-glow: transparent;
   position: relative;
   display: block;
   isolation: isolate;
   border-radius: 14px;
   text-align: start;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.18s ease-out;
 }
 
 .pop__back {
@@ -119,11 +109,10 @@
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  border: 2px solid var(--pop-edge);
-  background-color: var(--color-tq-bg);
-  background-image: radial-gradient(var(--pop-dot) 30%, transparent 32%);
-  background-size: 6px 6px;
-  transition: border-color 0.2s;
+  box-shadow:
+    -3px 14px 26px -12px rgb(0 0 0 / 0.8),
+    0 0 26px -4px var(--pop-glow);
+  transition: box-shadow 0.25s;
 }
 
 .pop__front {
@@ -134,8 +123,15 @@
   background: var(--pop-bg);
   color: var(--pop-fg);
   transform: translate(var(--lift), calc(var(--lift) * -1));
+  box-shadow:
+    calc(var(--lift) * -0.25) calc(var(--lift) * 0.25) 0 0 var(--pop-side),
+    calc(var(--lift) * -0.5) calc(var(--lift) * 0.5) 0 0 var(--pop-side),
+    calc(var(--lift) * -0.75) calc(var(--lift) * 0.75) 0 0 var(--pop-side),
+    calc(var(--lift) * -1) var(--lift) 0 0 var(--pop-side),
+    inset 0 1px 0 rgb(255 255 255 / 0.06);
   transition:
     transform 0.22s cubic-bezier(0.3, 1.6, 0.5, 1),
+    box-shadow 0.22s cubic-bezier(0.3, 1.6, 0.5, 1),
     background-color 0.2s,
     border-color 0.2s,
     color 0.2s;
@@ -152,19 +148,32 @@
   --lift: 1px;
 }
 
+/* Selected: a key pressed home, then springing forward on an apricot side wall. */
 .pop[aria-checked="true"],
 .pop[aria-pressed="true"] {
-  --lift: 2px;
+  --lift: 6px;
   --pop-bg: var(--color-tq-purple);
   --pop-edge: var(--color-tq-apricot);
-  --pop-dot: var(--color-tq-apricot);
+  --pop-side: var(--color-tq-apricot-deep);
+  --pop-glow: rgb(255 196 155 / 0.45);
   --pop-fg: #fff;
+}
+
+.pop[aria-checked="true"] .pop__front {
+  animation: key-press 0.42s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+@keyframes key-press {
+  0% {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
 }
 
 .pop--primary {
   --pop-bg: var(--color-tq-apricot);
   --pop-edge: var(--color-tq-apricot);
-  --pop-dot: var(--color-tq-apricot);
+  --pop-side: var(--color-tq-apricot-deep);
   --pop-fg: var(--color-tq-bg);
 }
 
@@ -179,18 +188,46 @@
   --pop-bg: var(--color-tq-surface);
   --pop-edge: var(--color-tq-line);
   --pop-fg: var(--color-tq-muted);
-  --pop-dot: transparent;
   cursor: not-allowed;
 }
 
-/* ---------- Keycaps (multi-select chips) ---------- */
+.pop:disabled .pop__back {
+  box-shadow: none;
+}
+
+/* ---------- Slab: an input box with an extruded side and a soft shadow ---------- */
+.slab {
+  --slab-side: #2b2346;
+  box-shadow:
+    -1px 1px 0 0 var(--slab-side),
+    -2px 2px 0 0 var(--slab-side),
+    -3px 3px 0 0 var(--slab-side),
+    -4px 4px 0 0 var(--slab-side),
+    -5px 5px 0 0 var(--slab-side),
+    -6px 18px 28px -12px rgb(0 0 0 / 0.8);
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+}
+
+.slab:focus-within {
+  --slab-side: var(--color-tq-apricot-deep);
+}
+
+/* ---------- Keycaps (multi-select chips) ----------
+   Same pointer tilt as .pop; --key-y presses the cap down into its side wall. */
 .key {
+  --key-y: 0px;
   position: relative;
   border: 2px solid var(--color-tq-line);
   border-radius: 12px;
   background: var(--color-tq-raised);
   color: var(--color-tq-paper);
-  box-shadow: 0 5px 0 0 #0a0812, 0 5px 0 2px var(--color-tq-line);
+  box-shadow:
+    0 5px 0 0 #0a0812,
+    0 5px 0 2px var(--color-tq-line),
+    -2px 14px 18px -8px rgb(0 0 0 / 0.7);
+  transform: perspective(600px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--key-y));
   transition:
     transform 0.12s ease-out,
     box-shadow 0.12s ease-out,
@@ -206,16 +243,22 @@
 }
 
 .key:active {
-  transform: translateY(3px);
-  box-shadow: 0 2px 0 0 #0a0812, 0 2px 0 2px var(--color-tq-line);
+  --key-y: 3px;
+  box-shadow:
+    0 2px 0 0 #0a0812,
+    0 2px 0 2px var(--color-tq-line),
+    -1px 6px 10px -6px rgb(0 0 0 / 0.7);
 }
 
 .key[aria-checked="true"] {
-  transform: translateY(3px);
+  --key-y: 3px;
   border-color: var(--color-tq-apricot);
   background: var(--color-tq-apricot);
   color: var(--color-tq-bg);
-  box-shadow: 0 2px 0 0 #0a0812, 0 2px 0 2px var(--color-tq-apricot-deep);
+  box-shadow:
+    0 2px 0 0 #0a0812,
+    0 2px 0 2px var(--color-tq-apricot-deep),
+    0 0 22px -6px rgb(255 196 155 / 0.55);
 }
 
 .key[aria-disabled="true"] {
@@ -250,14 +293,37 @@
 }
 
 /* ---------- Render log bits ---------- */
+/* A blinking vertex (diamond), not a text caret. */
 .cursor {
   display: inline-block;
-  width: 0.55em;
-  height: 1.05em;
-  margin-inline-start: 0.12em;
-  vertical-align: -0.15em;
+  width: 0.5em;
+  height: 0.5em;
+  margin-inline-start: 0.35em;
+  vertical-align: 0.05em;
   background: currentColor;
+  transform: rotate(45deg);
   animation: blink 1.05s steps(1) infinite;
+}
+
+/* ---------- Extruded type: layered shadow in a darker apricot (down-right, so each
+   letter's face covers the extrusion of the one before it) ---------- */
+.extrude {
+  text-shadow:
+    0.01em 0.01em 0 #e0a173,
+    0.02em 0.02em 0 #d39466,
+    0.03em 0.03em 0 #c5875a,
+    0.04em 0.04em 0 #b67a4f,
+    0.05em 0.05em 0 #a66d45,
+    0.06em 0.06em 0 #95603b,
+    0.08em 0.12em 0.16em rgb(0 0 0 / 0.55);
+}
+
+.extrude-sm {
+  text-shadow:
+    1px 1px 0 #d39466,
+    2px 2px 0 #b67a4f,
+    3px 3px 0 #95603b,
+    4px 6px 8px rgb(0 0 0 / 0.5);
 }
 
 @keyframes blink {

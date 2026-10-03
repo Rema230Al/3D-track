@@ -8,15 +8,15 @@ import { ACADEMIC_YEARS, isMemberValid, isTextValid, questions } from "../data/q
 import type { Member } from "../types/assessment";
 
 const BOOT = [
-  { text: "new scene: 3d-track", tone: "cmd" as const },
-  { text: "loading meshes...", tone: "out" as const },
-  { text: "viewport ready", tone: "ok" as const },
+  { text: "New Scene · 3D Track", tone: "cmd" as const },
+  { text: "Loading meshes…", tone: "out" as const },
+  { text: "Viewport ready", tone: "ok" as const },
 ];
 
-/** Big Latin wordmark; letters rise out of a mask. */
+/** Big Latin wordmark, extruded; letters rise out of a mask (padded so the extrusion isn't clipped). */
 function Wordmark() {
   const word = (text: string, color: (i: number) => string, delay: number) => (
-    <span className="block overflow-hidden pb-[0.04em]">
+    <span className="block -mb-[0.1em] overflow-hidden pb-[0.14em] pe-[0.1em]">
       {[...text].map((ch, i) => (
         <motion.span
           key={i}
@@ -35,7 +35,7 @@ function Wordmark() {
     <h1
       dir="ltr"
       aria-label="3D Track"
-      className="text-right font-mono text-[clamp(3.6rem,18vw,8.25rem)] font-extrabold leading-[0.92] tracking-[-0.07em] lg:text-left"
+      className="extrude text-right font-mono text-[clamp(3.6rem,18vw,8.25rem)] font-extrabold leading-[0.92] tracking-[-0.07em] lg:text-left"
     >
       {word("3D", () => "#ededed", 0)}
       <span className="flex items-end justify-end lg:justify-start">
@@ -247,11 +247,11 @@ function MemberPrompt({ value, onChange, onSubmit }: { value: Member; onChange: 
       className="border-l-2 border-tq-line ps-4 text-left font-mono text-[13px] leading-7 sm:text-sm"
     >
       <p className="text-tq-muted">
-        <span className="text-tq-violet">▸</span> adding member to scene...
+        <span className="text-tq-violet">▸</span> Adding member to scene…
       </p>
       <PromptField
         label="الاسم الكامل"
-        cmd="name"
+        cmd="Name"
         value={value.fullName}
         onChange={(fullName) => set({ fullName })}
         onEnter={() => advance("name")}
@@ -261,7 +261,7 @@ function MemberPrompt({ value, onChange, onSubmit }: { value: Member; onChange: 
       />
       <PromptField
         label="التخصص"
-        cmd="major"
+        cmd="Major"
         value={value.major}
         onChange={(major) => set({ major })}
         onEnter={() => advance("major")}
@@ -275,7 +275,7 @@ function MemberPrompt({ value, onChange, onSubmit }: { value: Member; onChange: 
         </p>
         <div className="flex items-start gap-2">
           <span className="w-[4.75rem] shrink-0 pt-2.5 text-tq-muted">
-            <span className="text-tq-violet">▸</span> year:
+            <span className="text-tq-violet">▸</span> Year:
           </span>
           <div
             ref={yearRef}
@@ -303,8 +303,8 @@ function MemberPrompt({ value, onChange, onSubmit }: { value: Member; onChange: 
       <p className="mt-2 min-h-7" aria-live="polite">
         {ok && (
           <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} className="inline-block text-tq-apricot">
-            ✓ <span className="text-tq-muted">member:</span> <bdi className="text-tq-paper">{value.fullName.trim()}</bdi>
-            <span className="text-tq-muted"> · object added</span>
+            ✓ <span className="text-tq-muted">Member:</span> <bdi className="text-tq-paper">{value.fullName.trim()}</bdi>
+            <span className="text-tq-muted"> · added to scene</span>
           </motion.span>
         )}
       </p>

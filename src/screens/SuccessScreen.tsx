@@ -7,11 +7,11 @@ import type { SubmitMode } from "../services/submissionService";
 import type { Submission } from "../types/assessment";
 
 const LOG = [
-  { text: "render --final \"member profile\"", tone: "cmd" as const },
-  { text: "profile modeled", tone: "out" as const },
-  { text: "interests textured", tone: "out" as const },
-  { text: "response received", tone: "out" as const },
-  { text: "frame rendered", tone: "ok" as const },
+  { text: "Rendering final frame · Member profile", tone: "cmd" as const },
+  { text: "Profile modeled", tone: "out" as const },
+  { text: "Interests textured", tone: "out" as const },
+  { text: "Response received", tone: "out" as const },
+  { text: "Frame rendered", tone: "ok" as const },
 ];
 
 /** 03 — COMPLETE: the peak builds itself row by row, then the flag goes up. */
@@ -73,7 +73,7 @@ export default function SuccessScreen({ submission, mode }: { submission: Submis
           <TerminalDetail lines={LOG} delay={1.1} charMs={14} pauseMs={120} className="mt-8" />
 
           <p dir="ltr" className="mt-6 text-right font-mono text-[11px] text-tq-muted/70 lg:text-left">
-            [frame {hash}] <bdi className="text-tq-paper">{submission.fullName}</bdi>
+            Frame #{hash} <bdi className="text-tq-paper">{submission.fullName}</bdi>
             {submission.favoriteColor.hex && (
               <span
                 className="mx-1.5 inline-block size-2.5 rounded-[2px] align-middle"

@@ -109,7 +109,7 @@ export default function ColorClaim({
         {/* The member's identity in the middle, with the slot the color attaches to. */}
         <div className="pointer-events-none absolute inset-0 grid place-items-center">
           <div ref={target} dir="ltr" className="flex max-w-[64%] flex-col items-center">
-            <span className="font-mono text-[10px] tracking-[0.3em] text-tq-muted">MEMBER/</span>
+            <span className="font-mono text-[10px] tracking-[0.3em] text-tq-muted">MEMBER</span>
             <span className="mt-1.5 flex max-w-full items-center gap-2.5">
               <bdi
                 className={`truncate font-extrabold leading-tight text-tq-paper ${
@@ -186,8 +186,8 @@ export default function ColorClaim({
             <motion.div key={value.hex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <TerminalDetail
                 lines={[
-                  { text: `material.base_color = ${value.hex}`, tone: "cmd" },
-                  { text: "material applied", tone: "ok" },
+                  { text: `Material › Base Color ${value.hex}`, tone: "cmd" },
+                  { text: "Material applied", tone: "ok" },
                 ]}
                 charMs={12}
                 pauseMs={60}

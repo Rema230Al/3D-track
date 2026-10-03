@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, PointerEvent, ReactNode } from "react";
 import { CubeIcon } from "./Icons3D";
 
 /**
@@ -43,17 +43,44 @@ const HAS_ARABIC = /[؀-ۿ]/;
 
 export const isLatin = (text: string) => !HAS_ARABIC.test(text);
 
+// ---------- Pointer tilt (desktop only) ----------
+// Sets --rx / --ry on the hovered element; .pop and .key turn toward the mouse with them.
+// Touch, pens and reduced motion never tilt.
+
+const fineHover = typeof window !== "undefined" ? window.matchMedia("(hover: hover) and (pointer: fine)") : null;
+const reducedMotion = typeof window !== "undefined" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+
+export const tilt = {
+  onPointerMove(e: PointerEvent<HTMLElement>) {
+    if (e.pointerType !== "mouse" || !fineHover?.matches || reducedMotion?.matches) return;
+    const el = e.currentTarget;
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    // Wide cards tilt less around the vertical axis so their far edge doesn't swing.
+    const yaw = r.width > 360 ? 2.5 : 7;
+    el.style.setProperty("--ry", `${(x * yaw).toFixed(2)}deg`);
+    el.style.setProperty("--rx", `${(-y * 9).toFixed(2)}deg`);
+  },
+  onPointerLeave(e: PointerEvent<HTMLElement>) {
+    e.currentTarget.style.removeProperty("--rx");
+    e.currentTarget.style.removeProperty("--ry");
+  },
+};
+
+const BRAND_RUN = /^3D Track$/i;
+
 /**
  * Arabic text with embedded English terms. Each Latin run is isolated as LTR so
  * "3D Track", "AI Agents", "Fine-Tuning"… keep their order inside RTL.
  */
-export function Mixed({ text, latinClass = "" }: { text: string; latinClass?: string }) {
+export function Mixed({ text, latinClass = "", brandClass }: { text: string; latinClass?: string; brandClass?: string }) {
   if (isLatin(text)) return <bdi dir="ltr">{text}</bdi>;
   return (
     <>
       {text.split(LATIN_RUN).map((part, i) =>
         i % 2 ? (
-          <bdi key={i} dir="ltr" className={latinClass}>
+          <bdi key={i} dir="ltr" className={brandClass && BRAND_RUN.test(part) ? brandClass : latinClass}>
             {part}
           </bdi>
         ) : (
@@ -99,10 +126,10 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   kbd?: string;
 };
 
-/** Pop-out button: a plate lifted off a dotted pixel shadow. */
+/** Pop-out button: an extruded slab that tilts toward the mouse. */
 export function PopButton({ primary, icon, kbd, children, className = "", ...rest }: ButtonProps) {
   return (
-    <button type="button" className={`pop ${primary ? "pop--primary" : ""} ${className}`} {...rest}>
+    <button type="button" className={`pop ${primary ? "pop--primary" : ""} ${className}`} {...tilt} {...rest}>
       <span className="pop__back" />
       <span className="pop__front flex h-full items-center justify-center gap-3 px-6 text-[17px] font-bold">
         <Roll>{children}</Roll>

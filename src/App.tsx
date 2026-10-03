@@ -4,6 +4,7 @@ import IntroScreen from "./screens/IntroScreen";
 import AssessmentScreen, { type SubmitState } from "./screens/AssessmentScreen";
 import SuccessScreen from "./screens/SuccessScreen";
 import { AxesGizmo } from "./components/Icons3D";
+import Floor from "./components/Floor";
 import { emptyAnswers, emptyMember } from "./data/questions";
 import {
   buildSubmission,
@@ -74,7 +75,7 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="backdrop" aria-hidden="true" />
+      <Floor />
       <AxesGizmo className="gizmo hidden sm:block" />
       <AnimatePresence mode="wait">
         <motion.div

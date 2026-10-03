@@ -95,8 +95,8 @@ export interface Option {
 
 interface QuestionBase {
   id: AnswerKey;
-  /** Code-style name shown above the question, e.g. `stack.used`. */
-  code: string;
+  /** Scene-object name shown above the question ("Object · Success") and in the outliner. */
+  object: string;
   title: string;
   /** Short helper line under the title. */
   hint: string;

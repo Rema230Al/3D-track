@@ -22,7 +22,7 @@ export const questions: Question[] = [
   // ----- Section 1: current experience -----
   {
     id: "programmingExperience",
-    code: "experience.log",
+    object: "Experience",
     kind: "single",
     title: "وش أقرب وصف لتجربتك في البرمجة؟",
     hint: CLOSEST_HINT,
@@ -35,7 +35,7 @@ export const questions: Question[] = [
   },
   {
     id: "buildAbility",
-    code: "build.fromScratch()",
+    object: "Build",
     kind: "single",
     title: "لو مسكت مشروع برمجي من الصفر، وش أقرب وصف لك؟",
     hint: CLOSEST_HINT,
@@ -48,7 +48,7 @@ export const questions: Question[] = [
   },
   {
     id: "gitGithubUsage",
-    code: "git.status",
+    object: "Git",
     kind: "single",
     title: "كيف تستخدم Git وGitHub في مشاريعك؟",
     hint: CLOSEST_HINT,
@@ -61,7 +61,7 @@ export const questions: Question[] = [
   },
   {
     id: "aiUsage",
-    code: "ai.usage",
+    object: "AI",
     kind: "single",
     title: "كيف تستخدم الـ AI أثناء البرمجة؟",
     hint: CLOSEST_HINT,
@@ -74,7 +74,7 @@ export const questions: Question[] = [
   },
   {
     id: "teamworkExperience",
-    code: "team.collab()",
+    object: "Teamwork",
     kind: "single",
     title: "وش تجربتك في العمل ضمن فريق برمجي؟",
     hint: CLOSEST_HINT,
@@ -87,7 +87,7 @@ export const questions: Question[] = [
   },
   {
     id: "technologiesUsed",
-    code: "stack.used[]",
+    object: "Stack",
     kind: "multi",
     title: "وش التقنيات اللي استخدمتها فعلياً في مشروع؟",
     hint: "اختر كل اللي ينطبق عليك",
@@ -110,7 +110,7 @@ export const questions: Question[] = [
   // ----- Section 2: interests -----
   {
     id: "interests",
-    code: "interests.pick(3)",
+    object: "Interests",
     kind: "multi",
     max: 3,
     title: "وش المجالات اللي تتحمس لها؟",
@@ -131,7 +131,7 @@ export const questions: Question[] = [
   },
   {
     id: "preferredActivities",
-    code: "activities.pick(2)",
+    object: "Activities",
     kind: "multi",
     max: 2,
     title: "وش نوع الأنشطة اللي تفضلها؟",
@@ -146,7 +146,7 @@ export const questions: Question[] = [
   },
   {
     id: "learningPreference",
-    code: "explore.mode",
+    object: "Explore",
     kind: "single",
     title: "لو قدمنا لك مجال جديد، وش تفضل؟",
     hint: CLOSEST_HINT,
@@ -160,7 +160,7 @@ export const questions: Question[] = [
   // ----- Section 3: expectations & roles -----
   {
     id: "trackAvoidances",
-    code: "track.avoid[]",
+    object: "Avoid",
     kind: "multi",
     title: "وش الشي اللي ما تبيه يصير في التراك؟",
     hint: "اختر كل اللي ينطبق عليك",
@@ -174,7 +174,7 @@ export const questions: Question[] = [
   },
   {
     id: "helpingPreference",
-    code: "help.others()",
+    object: "Helping",
     kind: "single",
     title: "تحب تساعد غيرك أو تشرح لهم؟",
     hint: CLOSEST_HINT,
@@ -186,7 +186,7 @@ export const questions: Question[] = [
   },
   {
     id: "preferredTeamRole",
-    code: "team.role",
+    object: "Role",
     kind: "single",
     title: "وش الدور اللي تحبه في فريق؟",
     hint: CLOSEST_HINT,
@@ -202,7 +202,7 @@ export const questions: Question[] = [
   // ----- Section 4: logistics -----
   {
     id: "preferredTimes",
-    code: "schedule.slots[]",
+    object: "Schedule",
     kind: "multi",
     title: "وش أنسب وقت للأنشطة؟",
     hint: "اختر كل اللي يناسبك",
@@ -215,7 +215,7 @@ export const questions: Question[] = [
   },
   {
     id: "activityFormat",
-    code: "activities.format",
+    object: "Format",
     kind: "single",
     title: "كيف تفضل تكون الأنشطة؟",
     hint: CLOSEST_HINT,
@@ -223,7 +223,7 @@ export const questions: Question[] = [
   },
   {
     id: "potentialBlocker",
-    code: "blockers.peek()",
+    object: "Blockers",
     kind: "single",
     title: "وش أكثر شي ممكن يعطلك خلال المسار؟",
     hint: CLOSEST_HINT,
@@ -239,7 +239,7 @@ export const questions: Question[] = [
   // ----- Section 5: closing -----
   {
     id: "successDefinition",
-    code: "success.define()",
+    object: "Success",
     kind: "text",
     multiline: true,
     title: "بنهاية الترم، وش الشي اللي لو حققته بتقول \"دخولي 3D Track كان يستاهل\"؟",
@@ -248,7 +248,7 @@ export const questions: Question[] = [
   },
   {
     id: "favoriteColor",
-    code: "identity.color",
+    object: "Color",
     kind: "color",
     title: "لو كان لك لون، وش بيكون؟ 🎨",
     hint: "اضغط على لونك",
@@ -268,7 +268,7 @@ export const questions: Question[] = [
   },
   {
     id: "leadershipNote",
-    code: "note.toLeaders()",
+    object: "Note",
     kind: "text",
     multiline: true,
     optional: true,

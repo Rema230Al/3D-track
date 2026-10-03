@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 import { OTHER, canContinue, isAnswered, needsNote, questions } from "../data/questions";
 import { withNote } from "../services/submissionService";
 import type { AnswerKey, AnswerValue, Answers, OtherNotes, Question } from "../types/assessment";
@@ -10,21 +10,34 @@ import ColorClaim from "../components/ColorClaim";
 import Progress, { PixelPeak } from "../components/Progress";
 import RenderText from "../components/RenderText";
 import { CameraIcon, CubeIcon, LightIcon, MeshIcon, SphereIcon, VerticesIcon } from "../components/Icons3D";
-import { GhostButton, Mixed, PopButton, pad, shortHash } from "../components/ui";
+import { GhostButton, Mixed, PopButton, pad } from "../components/ui";
+
+// Three.js only loads once the questions are on screen, in its own chunk.
+const QuestionObject = lazy(() => import("../components/QuestionObject"));
 
 export type SubmitState = "idle" | "sending" | "error";
 
 const TYPE_TAG: Record<Question["kind"], { label: string; Icon: typeof CubeIcon }> = {
-  single: { label: "select · 1", Icon: CubeIcon },
-  multi: { label: "select · n", Icon: VerticesIcon },
-  text: { label: "input", Icon: CameraIcon },
-  color: { label: "material", Icon: LightIcon },
+  single: { label: "Select · 1", Icon: CubeIcon },
+  multi: { label: "Select · N", Icon: VerticesIcon },
+  text: { label: "Edit · Text", Icon: CameraIcon },
+  color: { label: "Material", Icon: LightIcon },
 };
 
-const slide = {
-  enter: (dir: number) => ({ opacity: 0, x: dir * -36 }),
-  center: { opacity: 1, x: 0 },
-  exit: (dir: number) => ({ opacity: 0, x: dir * 36 }),
+// Camera move between questions. Forward: the current question sinks back into depth
+// while the next one comes forward out of it; going back plays it the other way
+// (toward the camera). 0.2s out + 0.3s in.
+const camera: Variants = {
+  enter: (dir: number) => ({ opacity: 0, z: dir * -260, transformPerspective: 900 }),
+  center: { opacity: 1, z: 0, transformPerspective: 900, transition: { duration: 0.3, ease: [0.2, 0.8, 0.2, 1] } },
+  exit: (dir: number) => ({ opacity: 0, z: dir * -260, transformPerspective: 900, transition: { duration: 0.2, ease: [0.5, 0, 0.8, 0.4] } }),
+};
+
+// Reduced motion: no camera move, just a quick cross-fade.
+const fade: Variants = {
+  enter: { opacity: 0 },
+  center: { opacity: 1, transition: { duration: 0.2 } },
+  exit: { opacity: 0, transition: { duration: 0.15 } },
 };
 
 function summary(value: AnswerValue, note?: string) {
@@ -55,10 +68,10 @@ function SidePanel({
       <PixelPeak level={done.filter(Boolean).length} className="w-full max-w-[300px]" />
       <div dir="ltr" className="mt-8 border-l-2 border-tq-line pl-4 text-left font-mono text-[12px] leading-7">
         <p className="flex items-center gap-2 text-tq-muted">
-          <MeshIcon size={13} className="text-tq-violet" /> scene outliner
+          <MeshIcon size={13} className="text-tq-violet" /> Outliner
         </p>
         <p className="truncate text-tq-muted">
-          artist: <bdi className="text-tq-paper">{fullName}</bdi>
+          Artist: <bdi className="text-tq-paper">{fullName}</bdi>
           {answers.favoriteColor && (
             <span className="ms-2 inline-block size-2.5 rounded-[2px] align-middle" style={{ background: answers.favoriteColor.hex }} />
           )}
@@ -72,14 +85,14 @@ function SidePanel({
               ) : (
                 <SphereIcon size={11} className="me-1.5 inline-block align-[-1px] opacity-40" />
               )}
-              <span className={done[i] ? "text-tq-violet" : ""}>{done[i] ? shortHash(q.id + s) : "·······"}</span> {q.code}
+              <span className={done[i] ? "text-tq-violet" : ""}>{q.object}</span>
               {done[i] && <span className="text-tq-muted/70"> — <bdi>{s}</bdi></span>}
             </p>
           );
         })}
       </div>
       <p dir="ltr" className="mt-6 text-left font-mono text-[11px] text-tq-muted/60">
-        1–9 select · ↵ next · click a block to jump back
+        1–9 select · ↵ render · click a block to jump back
       </p>
     </aside>
   );
@@ -116,6 +129,7 @@ export default function AssessmentScreen({
   const sending = submitState === "sending";
 
   const [dir, setDir] = useState(1);
+  const reduce = useReducedMotion();
   const autoTimer = useRef<number | undefined>(undefined);
 
   const go = (next: number) => {
@@ -188,24 +202,28 @@ export default function AssessmentScreen({
             <motion.section
               key={step}
               custom={dir}
-              variants={slide}
+              variants={reduce ? fade : camera}
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.24, ease: [0.2, 0.8, 0.2, 1] }}
             >
               <p className="flex items-center gap-2 font-mono text-xs text-tq-violet">
                 <MeshIcon size={14} className="shrink-0 text-tq-apricot" />
                 <bdi dir="ltr">
-                  {pad(step + 1)} — {q.code}
+                  {pad(step + 1)} — Object · {q.object}
                 </bdi>
               </p>
               {q.lead && <p className="mt-3 text-[17px] text-tq-muted sm:text-xl">{q.lead}</p>}
-              <h1 className="mt-3 text-balance text-[1.6rem] font-bold leading-[1.5] sm:text-[2.15rem] lg:text-[2.5rem] lg:leading-[1.4]">
-                <RenderText>
-                  <Mixed text={q.title} latinClass="text-tq-apricot" />
-                </RenderText>
-              </h1>
+              <div className="mt-3 flex items-start gap-3 sm:gap-5">
+                <h1 className="min-w-0 text-balance text-[1.6rem] font-bold leading-[1.5] sm:text-[2.15rem] lg:text-[2.5rem] lg:leading-[1.4]">
+                  <RenderText>
+                    <Mixed text={q.title} latinClass="text-tq-apricot" brandClass="text-tq-apricot extrude-sm" />
+                  </RenderText>
+                </h1>
+                <Suspense fallback={<div className="size-14 shrink-0 sm:size-16 lg:size-20" aria-hidden="true" />}>
+                  <QuestionObject index={step} solid={done[step]} className="size-14 shrink-0 sm:size-16 lg:size-20" />
+                </Suspense>
+              </div>
               <p className="mt-3 flex items-center gap-2.5 text-[14px] text-tq-muted">
                 <span dir="ltr" className="inline-flex items-center gap-1.5 rounded-md border-2 border-tq-line px-1.5 py-0.5 font-mono text-[10.5px] font-bold uppercase tracking-wider">
                   <tag.Icon size={12} className="text-tq-apricot" />
@@ -260,7 +278,7 @@ export default function AssessmentScreen({
                     placeholder={q.placeholder}
                     suggestions={q.suggestions}
                     multiline={q.multiline}
-                    file={`${q.id}.txt`}
+                    scene={q.object}
                     label={q.title}
                     onSubmit={next}
                   />
@@ -289,7 +307,7 @@ export default function AssessmentScreen({
                         value={others[q.id] ?? ""}
                         onChange={(v) => onOther(q.id, v)}
                         placeholder="اكتب هنا..."
-                        file=""
+                        scene={q.object}
                         label={detailsPrompt ?? OTHER}
                         onSubmit={next}
                       />
@@ -315,7 +333,7 @@ export default function AssessmentScreen({
               className="mb-4 rounded-xl border-2 border-tq-warn/50 bg-tq-warn/10 px-4 py-3"
             >
               <p dir="ltr" className="text-left font-mono text-xs text-tq-warn">
-                ✗ error: render failed — network
+                ✗ Render failed · network
               </p>
               <p className="mt-1 text-[14px] leading-7">ما قدرنا نرسل إجاباتك. إجاباتك محفوظة، جرّب مرة ثانية.</p>
             </motion.div>
