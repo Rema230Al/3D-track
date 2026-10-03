@@ -1,6 +1,11 @@
 node_modules
 dist
-.env
-.env.local
 *.log
 .wrangler
+
+# Secrets: never commit. .env.example (no values) stays tracked as the template.
+.env
+.env.*
+!.env.example
+.dev.vars
+*.pem
