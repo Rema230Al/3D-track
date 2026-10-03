@@ -176,7 +176,7 @@ export default function AssessmentScreen({
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (t.tagName === "TEXTAREA" || t.tagName === "INPUT") return;
-      if (e.key === "Enter" && t.tagName !== "BUTTON") keys.current.next();
+      if (e.key === "Enter" && t.tagName !== "BUTTON" && t.tagName !== "A") keys.current.next();
       else if (/^[1-9]$/.test(e.key) && !e.metaKey && !e.ctrlKey && !e.altKey) keys.current.pick(Number(e.key) - 1);
     };
     window.addEventListener("keydown", onKey);
@@ -189,6 +189,7 @@ export default function AssessmentScreen({
   const picked = q.kind === "single" ? q.options.find((o) => o.label === value) : undefined;
   const detailsPrompt = picked?.details;
   const noteOpen = otherSelected || !!detailsPrompt;
+  const otherRequired = (q.kind === "single" || q.kind === "multi") && q.options.some((o) => o.other && needsNote(o));
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col px-4 sm:px-8">
@@ -217,11 +218,11 @@ export default function AssessmentScreen({
               <div className="mt-3 flex items-start gap-3 sm:gap-5">
                 <h1 className="min-w-0 text-balance text-[1.6rem] font-bold leading-[1.5] sm:text-[2.15rem] lg:text-[2.5rem] lg:leading-[1.4]">
                   <RenderText>
-                    <Mixed text={q.title} latinClass="text-tq-apricot" brandClass="text-tq-apricot extrude-sm" />
+                    <Mixed text={q.title} latinClass="text-tq-apricot" brandClass="whitespace-nowrap text-tq-apricot extrude-sm" />
                   </RenderText>
                 </h1>
-                <Suspense fallback={<div className="size-14 shrink-0 sm:size-16 lg:size-20" aria-hidden="true" />}>
-                  <QuestionObject index={step} solid={done[step]} className="size-14 shrink-0 sm:size-16 lg:size-20" />
+                <Suspense fallback={<div className="size-20 shrink-0 sm:size-28 lg:size-36" aria-hidden="true" />}>
+                  <QuestionObject index={step} solid={done[step]} className="-my-1 size-20 shrink-0 sm:size-28 lg:-my-3 lg:size-36" />
                 </Suspense>
               </div>
               <p className="mt-3 flex items-center gap-2.5 text-[14px] text-tq-muted">
@@ -231,6 +232,24 @@ export default function AssessmentScreen({
                 </span>
                 {q.hint}
               </p>
+
+              {(q.kind === "single" || q.kind === "multi") && q.links && (
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {q.links.map((l) => (
+                    <a
+                      key={l.href}
+                      href={l.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="slab inline-flex min-h-11 items-center gap-2 rounded-xl border-2 border-tq-line bg-tq-surface px-4 text-[15px] font-bold text-tq-apricot underline-offset-4 transition-colors hover:border-tq-apricot hover:underline"
+                    >
+                      {l.label}
+                      <span aria-hidden="true" dir="ltr">↗</span>
+                      <span className="sr-only">(يفتح في نافذة جديدة)</span>
+                    </a>
+                  ))}
+                </div>
+              )}
 
               <div className="mt-7">
                 {q.kind === "single" && (
@@ -296,7 +315,7 @@ export default function AssessmentScreen({
                       <p className={`mb-2 mt-6 ${detailsPrompt ? "text-[16px] font-medium text-tq-paper" : "text-[14px] text-tq-muted"}`}>
                         {detailsPrompt ? (
                           <Mixed text={detailsPrompt} />
-                        ) : needsNote(picked) ? (
+                        ) : otherRequired ? (
                           "وضّح لنا «أخرى»"
                         ) : (
                           "وضّح لنا «أخرى» (اختياري)"

@@ -1,4 +1,4 @@
-import { ACADEMIC_YEARS, OTHER, emptyMember, isAnswered, questions, sanitizeAnswers } from "../data/questions";
+import { ACADEMIC_YEARS, OTHER, emptyMember, isAnswered, levelOf, questions, sanitizeAnswers } from "../data/questions";
 import type { Answers, Member, OtherNotes, Submission } from "../types/assessment";
 
 const WEBHOOK_URL = import.meta.env.VITE_SUBMISSION_WEBHOOK_URL?.trim() ?? "";
@@ -7,7 +7,7 @@ const MEMBER_KEY = "tuwaiq-3d-track:member";
 /** v1 stored only the member's name, as a plain string. */
 const LEGACY_NAME_KEY = "tuwaiq-3d-track:name";
 /** Bump whenever the questions change shape, so old drafts are migrated instead of trusted. */
-const DRAFT_VERSION = 5;
+const DRAFT_VERSION = 6;
 const TIMEOUT_MS = 15000;
 
 export type SubmitMode = "remote" | "local";
@@ -17,39 +17,34 @@ export function withNote(value: string, note?: string) {
   return value === OTHER && note?.trim() ? `${OTHER}: ${note.trim()}` : value;
 }
 
-/** The details typed under the selected option, only if that option asks for them. */
-function detailsFor(id: "learningPreference", answers: Answers, others: OtherNotes) {
-  const q = questions.find((qq) => qq.id === id);
-  const opt = q?.kind === "single" ? q.options.find((o) => o.label === answers[id]) : undefined;
-  return opt?.details ? (others[id] ?? "").trim() : "";
-}
-
 export function buildSubmission(member: Member, answers: Answers, others: OtherNotes): Submission {
+  const list = (id: "designTools" | "trackAvoidances") => answers[id].map((v) => withNote(v, others[id]));
+  const { score, level } = levelOf(answers);
   return {
     fullName: member.fullName.trim(),
     major: member.major.trim(),
     academicYear: member.academicYear,
     submittedAt: new Date().toISOString(),
 
-    programmingExperience: answers.programmingExperience,
-    buildAbility: answers.buildAbility,
-    gitGithubUsage: answers.gitGithubUsage,
-    aiUsage: answers.aiUsage,
+    levelScore: score,
+    level,
+
+    printingExperience: answers.printingExperience,
+    projectAbility: answers.projectAbility,
     teamworkExperience: answers.teamworkExperience,
-    technologiesUsed: answers.technologiesUsed.map((v) => withNote(v, others.technologiesUsed)),
 
-    interests: answers.interests.map((v) => withNote(v, others.interests)),
+    designTools: list("designTools"),
     preferredActivities: answers.preferredActivities,
-    learningPreference: answers.learningPreference,
-    learningPreferenceDetails: detailsFor("learningPreference", answers, others),
+    explorePreference: answers.explorePreference,
 
-    trackAvoidances: answers.trackAvoidances.map((v) => withNote(v, others.trackAvoidances)),
+    trackAvoidances: list("trackAvoidances"),
     helpingPreference: answers.helpingPreference,
-    preferredTeamRole: answers.preferredTeamRole,
+    projectType: answers.projectType,
 
     preferredTimes: answers.preferredTimes,
     activityFormat: answers.activityFormat,
     potentialBlocker: withNote(answers.potentialBlocker, others.potentialBlocker),
+    communityJoined: answers.communityJoined,
 
     successDefinition: answers.successDefinition.trim(),
     favoriteColor: answers.favoriteColor ?? { name: "", hex: "" },

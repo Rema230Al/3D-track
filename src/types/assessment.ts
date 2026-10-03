@@ -9,25 +9,23 @@ export interface Member {
 }
 
 export interface Answers {
-  // Current experience
-  programmingExperience: string;
-  buildAbility: string;
-  gitGithubUsage: string;
-  aiUsage: string;
+  // Level (questions 1–3, scored)
+  printingExperience: string;
+  projectAbility: string;
   teamworkExperience: string;
-  technologiesUsed: string[];
-  // Interests
-  interests: string[];
+  // Tools & interests
+  designTools: string[];
   preferredActivities: string[];
-  learningPreference: string;
+  explorePreference: string;
   // Expectations & roles
   trackAvoidances: string[];
   helpingPreference: string;
-  preferredTeamRole: string;
+  projectType: string;
   // Logistics
   preferredTimes: string[];
   activityFormat: string;
   potentialBlocker: string;
+  communityJoined: string;
   // Closing
   successDefinition: string;
   /** "Claim your color": null until a color is claimed. */
@@ -35,6 +33,9 @@ export interface Answers {
   /** Optional. */
   leadershipNote: string;
 }
+
+/** Level from questions 1–3 (score 3–12). Stored with the response only, never shown. */
+export type Level = "Beginner" | "Intermediate" | "Advanced";
 
 /** A claimable color: readable name + exact hex, both stored. */
 export interface FavoriteColor {
@@ -52,26 +53,27 @@ export interface Submission {
   academicYear: string;
   submittedAt: string;
 
-  programmingExperience: string;
-  buildAbility: string;
-  gitGithubUsage: string;
-  aiUsage: string;
-  teamworkExperience: string;
-  technologiesUsed: string[];
+  /** Sum of questions 1–3 (01 = 1 … 04 = 4): 3–12. */
+  levelScore: number;
+  level: Level;
 
-  interests: string[];
+  printingExperience: string;
+  projectAbility: string;
+  teamworkExperience: string;
+
+  /** "أخرى" is sent as "أخرى: <what they typed>" in every list or single answer. */
+  designTools: string[];
   preferredActivities: string[];
-  learningPreference: string;
-  /** What exactly they want to try / go deeper in; empty for options that don't ask. */
-  learningPreferenceDetails: string;
+  explorePreference: string;
 
   trackAvoidances: string[];
   helpingPreference: string;
-  preferredTeamRole: string;
+  projectType: string;
 
   preferredTimes: string[];
   activityFormat: string;
   potentialBlocker: string;
+  communityJoined: string;
 
   successDefinition: string;
   favoriteColor: FavoriteColor;
@@ -102,7 +104,7 @@ interface QuestionBase {
   hint: string;
   /** Optional lead-in line shown above the title. */
   lead?: string;
-  /** Can be left empty (only the leadership note). */
+  /** Can be left empty (only the closing note). */
   optional?: boolean;
 }
 
@@ -111,6 +113,8 @@ export interface ChoiceQuestion extends QuestionBase {
   options: Option[];
   /** multi only: maximum number of selections. */
   max?: number;
+  /** Links shown under the hint, opened in a new tab (e.g. the Discord / Notion invites). */
+  links?: { label: string; href: string }[];
 }
 
 export interface TextQuestion extends QuestionBase {

@@ -1,8 +1,8 @@
 /**
- * 3D Track — receives one assessment submission and appends it to the spreadsheet.
+ * 3D Printing Track — receives one assessment submission and appends it to the spreadsheet.
  * Deploy as a Web App (Execute as: Me · Who has access: Anyone).
  *
- * This script belongs to the 3D Track's OWN Google Sheet. Do not paste it into the
+ * This script belongs to the 3D Printing Track's OWN Google Sheet. Do not paste it into the
  * Programming Track (TUWAIQ INIT) sheet: bound scripts write to the sheet they live in.
  *
  * Tab: "Responses" (created automatically with its header row).
@@ -15,7 +15,7 @@
 
 const SHEET_NAME = "Responses";
 /** Returned by doGet, so you can open the Web App URL and see which code is live. */
-const SCRIPT_VERSION = "3d-v1-18q";
+const SCRIPT_VERSION = "3dp-v1-16q";
 
 const list_ = (v) => (Array.isArray(v) ? v.join(", ") : v || "");
 const text_ = (v) => (typeof v === "string" ? v : "");
@@ -28,30 +28,31 @@ const COLUMNS = [
   ["Academic Year", (d) => text_(d.academicYear)],
   ["Submitted At", (d) => date_(d.submittedAt)],
 
-  ["Programming Experience", (d) => text_(d.programmingExperience)],
-  ["Build Ability", (d) => text_(d.buildAbility)],
-  ["Git/GitHub Usage", (d) => text_(d.gitGithubUsage)],
-  ["AI Usage", (d) => text_(d.aiUsage)],
-  ["Teamwork Experience", (d) => text_(d.teamworkExperience)],
-  ["Technologies Used", (d) => list_(d.technologiesUsed)],
+  // Level from questions 1–3 (01 = 1 … 04 = 4). Never shown to the member.
+  ["Level Score", (d) => (typeof d.levelScore === "number" ? d.levelScore : "")],
+  ["Level", (d) => text_(d.level)],
 
-  ["Interests", (d) => list_(d.interests)],
+  ["3D Printing Experience", (d) => text_(d.printingExperience)],
+  ["Project Ability", (d) => text_(d.projectAbility)],
+  ["Teamwork Experience", (d) => text_(d.teamworkExperience)],
+
+  ["Design Tools", (d) => list_(d.designTools)],
   ["Preferred Activities", (d) => list_(d.preferredActivities)],
-  ["Learning Preference", (d) => text_(d.learningPreference)],
-  ["Learning Preference Details", (d) => text_(d.learningPreferenceDetails)],
+  ["Explore Preference", (d) => text_(d.explorePreference)],
 
   ["Track Avoidances", (d) => list_(d.trackAvoidances)],
   ["Helping Preference", (d) => text_(d.helpingPreference)],
-  ["Preferred Team Role", (d) => text_(d.preferredTeamRole)],
+  ["Project Type", (d) => text_(d.projectType)],
 
   ["Preferred Times", (d) => list_(d.preferredTimes)],
   ["Activity Format", (d) => text_(d.activityFormat)],
   ["Potential Blocker", (d) => text_(d.potentialBlocker)],
+  ["Discord & Notion Joined", (d) => text_(d.communityJoined)],
 
   ["Success Definition", (d) => text_(d.successDefinition)],
   ["Favorite Color", (d) => (d.favoriteColor && d.favoriteColor.name) || ""],
   ["Favorite Color Hex", (d) => (d.favoriteColor && d.favoriteColor.hex) || ""],
-  ["Leadership Note", (d) => text_(d.leadershipNote)],
+  ["Note", (d) => text_(d.leadershipNote)],
 ];
 
 function doPost(e) {

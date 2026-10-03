@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, PointerEvent, ReactNode } from "react";
 import { CubeIcon } from "./Icons3D";
 
 /**
- * Official logo slot. Drop the Tuwaiq × UJ 3D Track logo into /public/brand/
+ * Official logo slot. Drop the Tuwaiq × UJ 3D Printing Track logo into /public/brand/
  * and set its file name here (e.g. "brand/logo.svg"); until then the text wordmark is used.
  */
 export const LOGO_SRC: string | null = null;
@@ -22,7 +22,7 @@ const STOPS = [
   [0xff, 0xc4, 0x9b],
 ];
 
-/** 3D Track gradient (purple → violet → apricot) sampled at t ∈ [0, 1]. */
+/** 3D Printing Track gradient (purple → violet → apricot) sampled at t ∈ [0, 1]. */
 export function brandColor(t: number) {
   const x = Math.min(1, Math.max(0, t)) * (STOPS.length - 1);
   const i = Math.min(STOPS.length - 2, Math.floor(x));
@@ -37,7 +37,7 @@ export function seeded(i: number, k = 0) {
   return x - Math.floor(x);
 }
 
-// May start with digits ("3D Track") but must contain a letter, so plain numbers stay in the Arabic flow.
+// May start with digits ("3D Printing Track") but must contain a letter, so plain numbers stay in the Arabic flow.
 const LATIN_RUN = /(\d*[A-Za-z][A-Za-z0-9+#./&\- ]*[A-Za-z0-9+#])/g;
 const HAS_ARABIC = /[؀-ۿ]/;
 
@@ -68,11 +68,11 @@ export const tilt = {
   },
 };
 
-const BRAND_RUN = /^3D Track$/i;
+const BRAND_RUN = /^3D Printing Track$/i;
 
 /**
  * Arabic text with embedded English terms. Each Latin run is isolated as LTR so
- * "3D Track", "AI Agents", "Fine-Tuning"… keep their order inside RTL.
+ * "3D Printing Track", "AI Agents", "Fine-Tuning"… keep their order inside RTL.
  */
 export function Mixed({ text, latinClass = "", brandClass }: { text: string; latinClass?: string; brandClass?: string }) {
   if (isLatin(text)) return <bdi dir="ltr">{text}</bdi>;
@@ -101,7 +101,7 @@ export function Brand({ className = "" }: { className?: string }) {
         </p>
         <p className="mt-1.5 flex items-center gap-2 font-mono text-[9px] font-medium tracking-[0.36em] text-tq-violet">
           <CubeIcon size={11} className="text-tq-apricot" />
-          3D TRACK
+          3D PRINTING TRACK
         </p>
       </div>
     </div>

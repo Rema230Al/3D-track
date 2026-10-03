@@ -8,7 +8,7 @@ import { ACADEMIC_YEARS, isMemberValid, isTextValid, questions } from "../data/q
 import type { Member } from "../types/assessment";
 
 const BOOT = [
-  { text: "New Scene · 3D Track", tone: "cmd" as const },
+  { text: "New Scene · 3D Printing Track", tone: "cmd" as const },
   { text: "Loading meshes…", tone: "out" as const },
   { text: "Viewport ready", tone: "ok" as const },
 ];
@@ -34,12 +34,13 @@ function Wordmark() {
   return (
     <h1
       dir="ltr"
-      aria-label="3D Track"
-      className="extrude text-right font-mono text-[clamp(3.6rem,18vw,8.25rem)] font-extrabold leading-[0.92] tracking-[-0.07em] lg:text-left"
+      aria-label="3D Printing Track"
+      className="extrude text-right font-mono text-[clamp(3rem,15vw,6.75rem)] font-extrabold leading-[0.92] tracking-[-0.07em] lg:text-left"
     >
       {word("3D", () => "#ededed", 0)}
+      {word("PRINTING", (i) => brandColor(0.45 + i * 0.05), 0.1)}
       <span className="flex items-end justify-end lg:justify-start">
-        {word("TRACK", (i) => brandColor(0.5 + i * 0.125), 0.2)}
+        {word("TRACK", (i) => brandColor(0.85 + i * 0.04), 0.3)}
         <CubeIcon size="0.42em" strokeWidth={2.4} className="mb-[0.1em] ms-[0.08em] shrink-0 text-tq-apricot" />
       </span>
     </h1>
@@ -368,7 +369,7 @@ export default function IntroScreen({
             <h2 className="mt-8 text-[2.1rem] font-bold leading-tight sm:text-5xl">خلّنا نعرفك أكثر<span className="text-tq-apricot">.</span></h2>
             <p className="mt-3 max-w-md text-[15.5px] leading-8 text-tq-muted sm:text-[17px]">
               <Mixed
-                text="كم سؤال سريع يساعدنا نفهم مستواك، اهتماماتك، وإيش ودك تطلع فيه من 3D Track."
+                text="كم سؤال سريع يساعدنا نفهم مستواك، اهتماماتك، وإيش ودك تطلع فيه من 3D Printing Track."
                 latinClass="text-tq-apricot"
               />
             </p>

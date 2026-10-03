@@ -103,7 +103,7 @@ export default function SuccessScreen({ submission, mode }: { submission: Submis
       </main>
 
       <footer dir="ltr" className="flex justify-between font-mono text-[11px] text-tq-muted/60">
-        <span>TUWAIQ × UJ — 3D TRACK</span>
+        <span>TUWAIQ × UJ — 3D PRINTING TRACK</span>
         <span className="hidden sm:inline">SMALL STEPS. BIG BUILDS.</span>
       </footer>
     </div>

@@ -1,4 +1,4 @@
-import type { AnswerKey, Answers, FavoriteColor, Member, Option, OtherNotes, Question } from "../types/assessment";
+import type { AnswerKey, Answers, FavoriteColor, Level, Member, Option, OtherNotes, Question } from "../types/assessment";
 
 export const OTHER = "أخرى";
 
@@ -13,120 +13,73 @@ export const isTextValid = (v: string) => v.trim().length >= 2;
 export const isMemberValid = (m: Member) =>
   isTextValid(m.fullName) && isTextValid(m.major) && ACADEMIC_YEARS.includes(m.academicYear);
 
-// ---------- Assessment ----------
+// ---------- Assessment: 3D Printing Track ----------
 // The progress UI (Pixel Peak, rail, counters) derives its total from `questions.length`.
+// Every "أخرى" opens a required text field; what's typed is saved as "أخرى: <text>".
 
 const CLOSEST_HINT = "اختر الأقرب لك";
+const ALL_HINT = "اختر كل اللي ينطبق عليك";
+const other: Option = { label: OTHER, other: true, required: true };
 
 export const questions: Question[] = [
-  // ----- Section 1: current experience -----
+  // ----- Level (scored, see `levelOf`) -----
   {
-    id: "programmingExperience",
+    id: "printingExperience",
     object: "Experience",
     kind: "single",
-    title: "وش أقرب وصف لتجربتك في البرمجة؟",
+    title: "وش أقرب وصف لتجربتك في الطباعة ثلاثية الأبعاد؟",
     hint: CLOSEST_HINT,
     options: [
-      { label: "ما بنيت مشروع خارج مواد الجامعة" },
-      { label: "بنيت مشروع شخصي واحد خارج الجامعة" },
-      { label: "بنيت أكثر من مشروع شخصي" },
-      { label: "اشتغلت على مشروع حقيقي (تدريب، أو فريلانس، أو منتج له مستخدمين)" },
+      { label: "ما طبعت أو صممت أي نموذج خارج مواد الجامعة." },
+      { label: "صممت وطبعت مشروعاً شخصياً واحداً خارج نطاق الجامعة." },
+      { label: "صممت وطبعت أكثر من نموذج أو مشروع شخصي." },
+      { label: "نفذت مشاريع عملية لغيري (سواء بطلب، أو لمسابقات، أو منتجات جاهزة للاستخدام)." },
     ],
   },
   {
-    id: "buildAbility",
+    id: "projectAbility",
     object: "Build",
     kind: "single",
-    title: "لو مسكت مشروع برمجي من الصفر، وش أقرب وصف لك؟",
+    title: "لو مسكت مشروع طباعة ثلاثية الأبعاد من الصفر، وش أقرب وصف لك؟",
     hint: CLOSEST_HINT,
     options: [
       { label: "ما أعرف من وين أبدأ" },
-      { label: "أبدأ إذا كانت الخطوات محددة لي" },
-      { label: "أبدأ بنفسي، بس أحتاج مساعدة أثناء البناء" },
-      { label: "أبني المشروع كامل بنفسي" },
-    ],
-  },
-  {
-    id: "gitGithubUsage",
-    object: "Git",
-    kind: "single",
-    title: "كيف تستخدم Git وGitHub في مشاريعك؟",
-    hint: CLOSEST_HINT,
-    options: [
-      { label: "ما أستخدمهم" },
-      { label: "أسوي commit وpush وpull" },
-      { label: "أستخدم branches وmerge وPull Requests، وأحل الـ conflicts" },
-      { label: "أدير Git workflow لفريق" },
-    ],
-  },
-  {
-    id: "aiUsage",
-    object: "AI",
-    kind: "single",
-    title: "كيف تستخدم الـ AI أثناء البرمجة؟",
-    hint: CLOSEST_HINT,
-    options: [
-      { label: "أطلب منه كود وأنقله لمشروعي" },
-      { label: "أرسل له ملفات من مشروعي وأطبق تعديلاته" },
-      { label: "أستخدمه داخل بيئة التطوير ويعدل الملفات مباشرة" },
-      { label: "أعطيه مهام كاملة كـ Agent، ويشغّل Commands ويتابع التنفيذ" },
+      { label: "أبدأ إذا كانت الخطوات ومقاييس النموذج واضحة لي" },
+      { label: "أبدأ أصمم وأطبع بنفسي، بس أحتاج مساعدة أو استشارة أثناء التعديل" },
+      { label: "أصمم النموذج وأضبط إعدادات الطابعة وأنفذ المشروع كامل بنفسي" },
     ],
   },
   {
     id: "teamworkExperience",
     object: "Teamwork",
     kind: "single",
-    title: "وش تجربتك في العمل ضمن فريق برمجي؟",
+    title: "وش تجربتك في العمل ضمن فريق في مشروع طباعة ثلاثية الأبعاد؟",
     hint: CLOSEST_HINT,
     options: [
-      { label: "ما اشتغلت في فريق برمجي" },
-      { label: "اشتغلت في فريق، وأحد غيري يوزع المهام" },
-      { label: "أشارك في تقسيم المهام ودمج شغل الفريق" },
-      { label: "أنظم شغل الفريق وأتابع المواعيد" },
-    ],
-  },
-  {
-    id: "technologiesUsed",
-    object: "Stack",
-    kind: "multi",
-    title: "وش التقنيات اللي استخدمتها فعلياً في مشروع؟",
-    hint: "اختر كل اللي ينطبق عليك",
-    options: [
-      { label: "Python" },
-      { label: "JavaScript / TypeScript" },
-      { label: "Java" },
-      { label: "React" },
-      { label: "Next.js" },
-      { label: "Flutter" },
-      { label: "Node.js" },
-      { label: "Firebase" },
-      { label: "SQL" },
-      { label: "Docker" },
-      { label: "مكتبات AI / ML" },
-      { label: OTHER, other: true },
+      { label: "ما اشتغلت في فريق من قبل" },
+      { label: "اشتغلت في فريق، وغيري وزع المهام" },
+      { label: "أشارك في تقسيم وتنسيق مهام الفريق" },
+      { label: "أقود الفريق، أنظم سير العمل وأتابع المواعيد" },
     ],
   },
 
-  // ----- Section 2: interests -----
+  // ----- Tools & interests -----
   {
-    id: "interests",
-    object: "Interests",
+    id: "designTools",
+    object: "Software",
     kind: "multi",
-    max: 3,
-    title: "وش المجالات اللي تتحمس لها؟",
-    hint: "اختر 3 كحد أقصى",
+    title: "وش التقنيات وبرامج التصميم اللي استخدمتها فعلياً في مشروع؟",
+    hint: ALL_HINT,
     options: [
-      { label: "AI Agents & Automation" },
-      { label: "Computer Vision / ML" },
-      { label: "Web Development" },
-      { label: "Mobile Development" },
-      { label: "Backend & APIs" },
-      { label: "DevOps & Cloud" },
-      { label: "Cybersecurity" },
-      { label: "Game Development" },
-      { label: "UI/UX" },
-      { label: "Open Source" },
-      { label: OTHER, other: true },
+      { label: "Tinkercad" },
+      { label: "Autodesk Inventor" },
+      { label: "Autodesk Fusion" },
+      { label: "SolidWorks" },
+      { label: "AutoCAD" },
+      { label: "Blender" },
+      { label: "FreeCAD" },
+      { label: "أدوات تعتمد على الذكاء الاصطناعي (AI)" },
+      other,
     ],
   },
   {
@@ -137,39 +90,35 @@ export const questions: Question[] = [
     title: "وش نوع الأنشطة اللي تفضلها؟",
     hint: "اختر 2 كحد أقصى",
     options: [
-      { label: "ورش تطبيقية" },
+      { label: "ورش تطبيقية للنمذجة والطباعة" },
       { label: "مشروع جماعي نشتغل عليه طول الترم" },
-      { label: "هاكاثونات وتحديات" },
-      { label: "جلسات مع متحدثين من سوق العمل" },
-      { label: "جلسات نحل فيها مشاكل مع بعض" },
+      { label: "هاكاثونات وتحديات ابتكارية" },
+      { label: "جلسات مع متخصصين من سوق العمل" },
+      { label: "جلسات نحل فيها مشاكل وطباعات متعثرة مع بعض" },
     ],
   },
   {
-    id: "learningPreference",
+    id: "explorePreference",
     object: "Explore",
     kind: "single",
-    title: "لو قدمنا لك مجال جديد، وش تفضل؟",
+    title: "عادي تجرب شيء جديد ولا تتعمق في نفس اللي متعود عليه من مجالات و مهارات و برامج؟",
     hint: CLOSEST_HINT,
-    options: [
-      { label: "أجرب شي جديد كلياً", details: "وش المجال أو التقنية اللي ودك تجربها؟" },
-      { label: "أتعمق في شي أعرفه", details: "وش المجال أو التقنية اللي ودك تتعمق فيها؟" },
-      { label: "مزيج بين الاثنين" },
-    ],
+    options: [{ label: "أجرب شي جديد كلياً" }, { label: "أتعمق في شي أعرفه" }, { label: "مزيج بين الاثنين" }],
   },
 
-  // ----- Section 3: expectations & roles -----
+  // ----- Expectations & roles -----
   {
     id: "trackAvoidances",
     object: "Avoid",
     kind: "multi",
     title: "وش الشي اللي ما تبيه يصير في التراك؟",
-    hint: "اختر كل اللي ينطبق عليك",
+    hint: ALL_HINT,
     options: [
       { label: "ورش نظرية بدون تطبيق" },
       { label: "محتوى أسهل من مستواي" },
       { label: "محتوى أصعب من مستواي" },
       { label: "اجتماعات كثيرة بدون فايدة واضحة" },
-      { label: OTHER, other: true },
+      other,
     ],
   },
   {
@@ -185,26 +134,25 @@ export const questions: Question[] = [
     ],
   },
   {
-    id: "preferredTeamRole",
-    object: "Role",
+    id: "projectType",
+    object: "Projects",
     kind: "single",
-    title: "وش الدور اللي تحبه في فريق؟",
+    title: "وش نوع المشاريع اللي تحب تشتغل عليها؟",
     hint: CLOSEST_HINT,
     options: [
-      { label: "Frontend" },
-      { label: "Backend" },
-      { label: "تصميم الواجهات" },
-      { label: "تنظيم الفريق وإدارته" },
+      { label: "النماذج الأولية (Prototyping)" },
+      { label: "المشاريع الإبداعية" },
+      { label: "النماذج القابلة للبيع أو الـ MVP" },
       { label: "لسا ما أعرف" },
     ],
   },
 
-  // ----- Section 4: logistics -----
+  // ----- Logistics -----
   {
     id: "preferredTimes",
     object: "Schedule",
     kind: "multi",
-    title: "وش أنسب وقت للأنشطة؟",
+    title: "وش أنسب وقت للأنشطة و الإجتماعات ؟",
     hint: "اختر كل اللي يناسبك",
     options: [
       { label: "أيام الأسبوع، الصباح" },
@@ -230,19 +178,31 @@ export const questions: Question[] = [
     options: [
       { label: "ضغط الدراسة والاختبارات" },
       { label: "المحتوى أصعب من مستواي" },
-      { label: "أعلق وما أعرف أكمل لحالي" },
+      { label: "أعلّق وما أعرف أكمل لحالي" },
       { label: "أفقد الحماس مع الوقت" },
-      { label: OTHER, other: true, required: true },
+      other,
     ],
   },
+  {
+    id: "communityJoined",
+    object: "Community",
+    kind: "single",
+    title: "هل دخلت سيرفر الديسكورد (للاجتماعات و بنك الافكار) ومنصة نوشن (لترتيب و متابعة المهام)؟",
+    hint: CLOSEST_HINT,
+    links: [
+      { label: "رابط الديسكورد", href: "https://discord.gg/aZmy42e9A" },
+      { label: "رابط النوشن", href: "https://app.notion.com/invite/cba993779b032804ceb239b6a3ed2bdeae345610" },
+    ],
+    options: [{ label: "إيوه دخلت الاثنين" }, { label: "دخلت أحدهما فقط" }, { label: "لسا، بدخل الحين" }],
+  },
 
-  // ----- Section 5: closing -----
+  // ----- Closing -----
   {
     id: "successDefinition",
     object: "Success",
     kind: "text",
     multiline: true,
-    title: "بنهاية الترم، وش الشي اللي لو حققته بتقول \"دخولي 3D Track كان يستاهل\"؟",
+    title: "بنهاية الترم، وش الشي اللي لو حققته بتقول \"دخولي 3D Printing Track كان يستاهل\"؟",
     hint: "جملة أو جملتين تكفي",
     placeholder: "اكتب إجابتك هنا...",
   },
@@ -250,7 +210,7 @@ export const questions: Question[] = [
     id: "favoriteColor",
     object: "Color",
     kind: "color",
-    title: "لو كان لك لون، وش بيكون؟ 🎨",
+    title: "لو كان لك لون وش بيكون ؟",
     hint: "اضغط على لونك",
     // Shades tuned to read clearly on the dark interface. Name + hex are both submitted.
     options: [
@@ -272,41 +232,61 @@ export const questions: Question[] = [
     kind: "text",
     multiline: true,
     optional: true,
-    title: "إذا عندك أي ملاحظة أو اقتراح للـ Leader والـ Co-Leader، اكتبها هنا 🤍",
+    title: "إذا عندك أي ملاحظة أو اقتراح اكتبها هنا 🤍",
     hint: "اختياري، تقدر تتركه فاضي",
     placeholder: "اكتب ملاحظتك هنا...",
   },
 ];
 
 export const emptyAnswers: Answers = {
-  programmingExperience: "",
-  buildAbility: "",
-  gitGithubUsage: "",
-  aiUsage: "",
+  printingExperience: "",
+  projectAbility: "",
   teamworkExperience: "",
-  technologiesUsed: [],
-  interests: [],
+  designTools: [],
   preferredActivities: [],
-  learningPreference: "",
+  explorePreference: "",
   trackAvoidances: [],
   helpingPreference: "",
-  preferredTeamRole: "",
+  projectType: "",
   preferredTimes: [],
   activityFormat: "",
   potentialBlocker: "",
+  communityJoined: "",
   successDefinition: "",
   favoriteColor: null,
   leadershipNote: "",
 };
+
+// ---------- Level (saved with the response, never shown to the member) ----------
+// Questions 1–3: option 01 = 1 point … 04 = 4 points, so the total runs 3–12.
+
+const LEVEL_QUESTIONS: AnswerKey[] = ["printingExperience", "projectAbility", "teamworkExperience"];
+
+export function levelOf(answers: Answers): { score: number; level: Level } {
+  const score = LEVEL_QUESTIONS.reduce((sum, id) => {
+    const q = questions.find((qq) => qq.id === id);
+    const i = q?.kind === "single" ? q.options.findIndex((o) => o.label === answers[id]) : -1;
+    return sum + (i + 1);
+  }, 0);
+  const level: Level = score >= 10 ? "Advanced" : score >= 6 ? "Intermediate" : "Beginner";
+  return { score, level };
+}
 
 /** The option's text field must be filled in: `details` options and a required "أخرى". */
 export const needsNote = (opt?: Option) => !!opt && (!!opt.details || (!!opt.other && !!opt.required));
 
 /** The selected option asks for text, and it's filled in (always true otherwise). */
 export function detailsGiven(q: Question, answers: Answers, notes: OtherNotes): boolean {
-  if (q.kind !== "single") return true;
-  const opt = q.options.find((o) => o.label === answers[q.id]);
-  return !needsNote(opt) || isTextValid(notes[q.id] ?? "");
+  if (q.kind === "single") {
+    const opt = q.options.find((o) => o.label === answers[q.id]);
+    return !needsNote(opt) || isTextValid(notes[q.id] ?? "");
+  }
+  if (q.kind === "multi") {
+    const value = answers[q.id] as string[];
+    const opt = q.options.find((o) => needsNote(o) && value.includes(o.label));
+    return !opt || isTextValid(notes[q.id] ?? "");
+  }
+  return true;
 }
 
 /** Has the member actually answered it (an empty optional question is not answered). */

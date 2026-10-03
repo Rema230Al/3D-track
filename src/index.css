@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Tuwaiq × UJ 3D Track palette. The dark purple base stays; soft apricot is the
+/* Tuwaiq × UJ 3D Printing Track palette. The dark purple base stays; soft apricot is the
    track's accent (primary actions, selection, progress, focus, highlights). */
 @theme {
   --color-tq-purple: #4f29b7;
